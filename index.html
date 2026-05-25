@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ember">
+<meta name="application-name" content="Ember">
+<meta name="theme-color" content="#100a1e">
+<meta name="format-detection" content="telephone=no">
+<meta name="description" content="Ember — A Game for Two. The intimate couples card game.">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<title>Ember - A Game for Two</title>
+<style>
+:root{--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px)}
+body{padding-bottom:var(--safe-bottom)}
+.screen{padding-top:max(24px,calc(var(--safe-top) + 16px))}
+#agegate{padding-top:max(32px,calc(var(--safe-top) + 20px))}
+#installBanner{display:none;position:fixed;bottom:calc(16px + var(--safe-bottom));left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%);background:linear-gradient(135deg,#2d0f3e,#1a0a2e);border:1px solid rgba(201,168,76,.5);border-radius:16px;padding:14px 18px;z-index:8888;width:calc(100% - 40px);max-width:360px;box-shadow:0 8px 32px rgba(0,0,0,.6)}
+#installBanner.show{display:block}
+.ib-row{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center}
+.ib-icon{font-size:26px;margin-right:12px}
+.ib-text{-webkit-flex:1;flex:1}
+.ib-title{font-size:14px;font-weight:600;color:#f0e6f6;font-family:Georgia,serif}
+.ib-sub{font-size:11px;color:#7a5a9a;margin-top:1px}
+.ib-install{background:linear-gradient(135deg,#9b1f4a,#c23358);color:#fff;border:none;border-radius:18px;padding:8px 14px;font-size:12px;font-family:Georgia,serif;cursor:pointer;margin-left:8px;-webkit-appearance:none;appearance:none;white-space:nowrap}
+.ib-close{background:none;border:none;color:#5a3a6a;font-size:18px;cursor:pointer;padding:0 0 0 6px;-webkit-appearance:none;appearance:none;line-height:1}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:#100a1e;font-family:Georgia,serif;min-height:100vh;padding-bottom:48px;color:#f0e6f6}
+body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;
+  background:radial-gradient(ellipse 80% 50% at 20% 0%,rgba(120,40,160,.18) 0%,transparent 60%),
+             radial-gradient(ellipse 60% 60% at 80% 100%,rgba(180,40,100,.12) 0%,transparent 60%);
+  pointer-events:none;z-index:0}
+.screen{position:relative;z-index:1;display:none;max-width:480px;margin:0 auto;padding:24px 18px}
+.screen.active{display:block}
+
+/* TYPOGRAPHY */
+h1{font-size:34px;font-weight:400;font-style:italic;color:#f0e6f6;text-align:center;margin-bottom:4px;letter-spacing:.02em}
+h2{font-size:22px;font-weight:400;font-style:italic;color:#e8c8f4;text-align:center;margin-bottom:4px}
+.subtitle{font-size:11px;color:#7a5a9a;letter-spacing:.2em;text-transform:uppercase;text-align:center;margin-bottom:24px}
+.ember-logo{font-size:38px;text-align:center;margin-bottom:6px}
+.gold-line{width:60px;height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);margin:10px auto 20px}
+.wide-gold{width:120px;height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);margin:14px auto}
+
+/* BUTTONS */
+button{font-family:Georgia,serif;cursor:pointer;border:none;background:none;-webkit-appearance:none;appearance:none;-webkit-border-radius:0;border-radius:0}
+button:active{opacity:.75}
+.btn-main{background:linear-gradient(135deg,#9b1f4a,#c23358);color:#fff;border-radius:32px;padding:14px 38px;font-size:16px;display:block;margin:0 auto;box-shadow:0 4px 24px rgba(194,51,88,.45);letter-spacing:.04em}
+.btn-gold{background:linear-gradient(135deg,#a07828,#c9a84c);color:#1a0f00;border-radius:32px;padding:14px 38px;font-size:16px;display:block;margin:0 auto;box-shadow:0 4px 24px rgba(201,168,76,.4);letter-spacing:.04em;font-weight:600}
+.btn-outline{background:transparent;color:#e8a0c0;border:1px solid rgba(232,160,192,.4);border-radius:24px;padding:11px 22px;font-size:14px}
+.btn-ghost{color:#6a4a7a;font-size:13px;font-style:italic;padding:4px}
+.btn-back{color:#6a4a7a;font-size:13px;margin-bottom:18px;display:block}
+
+/* INPUTS */
+.name-row{display:-webkit-flex;display:flex;margin-right:10px;margin-bottom:22px}
+.name-col{flex:1;text-align:center}
+.name-col .nicon{font-size:22px;display:block;margin-bottom:6px}
+.name-col input{width:100%;padding:11px 12px;border-radius:12px;border:1px solid rgba(180,100,220,.25);background:rgba(255,255,255,.05);font-size:16px;font-family:Georgia,serif;text-align:center;outline:none;color:#f0e6f6;-webkit-appearance:none;appearance:none}
+.name-col input::placeholder{color:#5a3a6a}
+
+/* LAYOUT */
+.sect-label{font-size:10px;color:#6a4a7a;text-align:center;text-transform:uppercase;letter-spacing:.15em;margin-bottom:10px}
+.divider{border-top:1px solid rgba(180,100,220,.15);padding-top:16px;margin-bottom:14px}
+.ornament{color:#c9a84c;opacity:.5;font-size:13px;text-align:center;letter-spacing:.3em;margin:8px 0}
+
+/* MOOD SELECTOR */
+.mood-grid{display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;margin-right:8px;margin-bottom:22px}
+.mood-btn{flex:1;min-width:calc(50% - 4px);padding:12px 10px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);cursor:pointer;text-align:center;-webkit-transition:background .2s,border-color .2s,opacity .2s;transition:background .2s,border-color .2s,opacity .2s}
+.mood-btn .moodicon{font-size:22px;display:block;margin-bottom:5px}
+.mood-btn .moodname{font-size:12px;font-weight:600;color:#4a2a6a;display:block}
+.mood-btn .mooddesc{font-size:10px;color:#3a1a5a;display:block;margin-top:2px;line-height:1.4}
+.mood-btn.sel{border-color:var(--mc);background:rgba(var(--mc-rgb),.14)}
+.mood-btn.sel .moodname{color:var(--mc)}
+.mood-btn.sel .mooddesc{color:var(--mc);opacity:.8}
+.mood-hint{font-size:11px;color:#4a2a6a;text-align:center;font-style:italic;margin-bottom:16px}
+
+/* LOVE LANGUAGE SELECTOR */
+.ll-grid{display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;margin-right:8px;margin-bottom:10px}
+.ll-row{display:-webkit-flex;display:flex;gap:8px}
+.ll-btn{flex:1;padding:10px 8px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);cursor:pointer;text-align:center;-webkit-transition:background .2s,border-color .2s,opacity .2s;transition:background .2s,border-color .2s,opacity .2s}
+.ll-btn .llicon{font-size:18px;display:block;margin-bottom:3px}
+.ll-btn .llname{font-size:10px;font-weight:600;color:#4a2a6a;display:block;line-height:1.3}
+.ll-btn.sel{border-color:#c9a84c;background:rgba(201,168,76,.14)}
+.ll-btn.sel .llname{color:#c9a84c}
+.ll-section{margin-bottom:18px}
+.ll-player-label{font-size:11px;color:#7a5a9a;text-align:center;margin-bottom:8px;font-style:italic}
+
+/* LEVEL SELECTOR */
+.level-grid{display:-webkit-flex;display:flex;margin-right:8px;-webkit-justify-content:center;justify-content:center;-webkit-flex-wrap:wrap;flex-wrap:wrap;margin-bottom:24px}
+.level-btn{padding:11px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);min-width:74px;text-align:center;cursor:pointer;-webkit-transition:background .2s,border-color .2s,opacity .2s;transition:background .2s,border-color .2s,opacity .2s}
+.level-btn .lem{font-size:20px}
+.level-btn .ln{font-size:11px;font-weight:600;color:#4a2a6a;margin-top:3px}
+.level-btn .ld{font-size:9px;color:#3a1a5a;margin-top:1px}
+.level-btn.sel{border-color:var(--lc);background:rgba(var(--lc-rgb),.12)}
+.level-btn.sel .ln{color:var(--lc)}
+.level-btn.sel .ld{color:var(--lc)}
+
+/* TARGET SELECTOR */
+.target-row{display:-webkit-flex;display:flex;margin-right:8px;margin-bottom:22px}
+.target-btn{flex:1;padding:10px 6px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);cursor:pointer;text-align:center;-webkit-transition:background .2s,border-color .2s,opacity .2s;transition:background .2s,border-color .2s,opacity .2s}
+.target-btn .tval{font-size:20px;font-weight:600;color:#4a2a6a;font-family:Georgia,serif}
+.target-btn .tlbl{font-size:9px;color:#3a1a5a;text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
+.target-btn.sel{border-color:#c9a84c;background:rgba(201,168,76,.12)}
+.target-btn.sel .tval{color:#c9a84c}
+.target-btn.sel .tlbl{color:#a07828}
+
+/* SCOREBOARD */
+.score-row{display:-webkit-flex;display:flex;margin-right:10px;margin-bottom:14px}
+.score-card{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(180,100,220,.15);border-radius:16px;padding:12px 10px;text-align:center;-webkit-transition:background .25s,border-color .25s;transition:background .25s,border-color .25s}
+.score-card.active{background:rgba(194,51,88,.12);border-color:rgba(194,51,88,.4)}
+.score-card .sicon{font-size:20px;margin-bottom:2px}
+.score-card .sname{font-size:12px;font-weight:600;color:#d0b0e8}
+.score-card .sll{font-size:10px;color:#5a3a6a;font-style:italic;margin-top:1px}
+.score-card .spts{font-size:24px;color:#e8679a;font-weight:600;line-height:1.1;margin-top:2px}
+.score-card .starget{font-size:9px;color:#4a2a6a;margin-top:1px}
+.score-card .sturn{font-size:11px;color:#e8679a;font-style:italic;margin-top:3px}
+.round-lbl{font-size:10px;color:#5a3a6a;text-align:center}
+
+/* MOOD BANNER */
+.mood-banner{background:rgba(255,255,255,.04);border:1px solid rgba(180,100,220,.2);border-radius:12px;padding:8px 14px;margin-bottom:14px;text-align:center;font-size:12px;color:#9a78b0;font-style:italic;letter-spacing:.04em}
+
+/* PROGRESS BAR */
+.progress-wrap{margin-bottom:16px}
+.progress-label{display:-webkit-flex;display:flex;-webkit-justify-content:space-between;justify-content:space-between;font-size:10px;color:#5a3a6a;margin-bottom:5px;letter-spacing:.08em}
+.progress-track{height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;border-radius:2px;-webkit-transition:width .4s ease;transition:width .4s ease;background:linear-gradient(90deg,#9b1f4a,#c9a84c)}
+
+/* DICE */
+.dice-area{text-align:center;margin-bottom:16px}
+.dice-face{font-size:60px;display:block;line-height:1;margin-bottom:12px;cursor:pointer;user-select:none;filter:drop-shadow(0 0 12px rgba(180,100,220,.4))}
+.dice-face.rolling{-webkit-animation:spin .35s linear infinite;animation:spin .35s linear infinite}
+@-webkit-keyframes spin{
+0%{-webkit-transform:rotate(0) scale(1)}50%{-webkit-transform:rotate(180deg) scale(1.1)}100%{-webkit-transform:rotate(360deg) scale(1)}}
+@keyframes spin{0%{transform:rotate(0) scale(1)}50%{transform:rotate(180deg) scale(1.1)}100%{transform:rotate(360deg) scale(1)}}
+.turn-lbl{color:#7a5a8a;font-size:13px;font-style:italic;text-align:center;margin-bottom:10px}
+
+/* CHIPS */
+.chip-row{display:-webkit-flex;display:flex;margin-right:8px;-webkit-justify-content:center;justify-content:center;-webkit-flex-wrap:wrap;flex-wrap:wrap}
+.chip{padding:7px 14px;border-radius:20px;font-size:12px;cursor:pointer;border:1px solid;font-family:Georgia,serif;-webkit-transition:background .2s,border-color .2s,opacity .2s;transition:background .2s,border-color .2s,opacity .2s}
+
+/* TDC */
+.tdc-btn{padding:13px 0;border-radius:24px;border:1px solid rgba(180,100,220,.4);background:rgba(120,40,180,.15);color:#c8a0e8;font-size:14px;font-family:Georgia,serif;cursor:pointer;width:100%;font-weight:600;letter-spacing:.04em}
+.tdc-type-btn{background:rgba(255,255,255,.04);border-radius:16px;padding:16px 18px;text-align:left;cursor:pointer;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;margin-right:14px;border:1px solid rgba(180,100,220,.2);margin-bottom:10px;width:100%}
+.tdc-type-btn .ticon{font-size:28px}
+.tdc-type-btn .ttitle{font-size:15px;font-weight:600;font-family:Georgia,serif}
+.tdc-type-btn .tdesc{font-size:11px;margin-top:3px;opacity:.8}
+
+/* CARD */
+.card-box{background:linear-gradient(160deg,rgba(40,15,65,.95),rgba(25,8,45,.98));border-radius:24px;padding:28px 22px;margin-bottom:16px;border:1px solid rgba(180,100,220,.25);box-shadow:0 8px 40px rgba(0,0,0,.5)}
+.badge-row{display:-webkit-flex;display:flex;margin-right:7px;-webkit-justify-content:center;justify-content:center;-webkit-flex-wrap:wrap;flex-wrap:wrap;margin-bottom:18px}
+.badge{font-size:11px;padding:5px 14px;border-radius:20px;font-family:sans-serif;font-weight:600;letter-spacing:.04em}
+.card-text{font-size:17px;line-height:1.8;color:#ede0f8;text-align:center}
+.card-who{text-align:center;color:#9a6ab0;font-size:13px;font-style:italic;margin-bottom:16px}
+.action-row{display:-webkit-flex;display:flex;margin-right:10px;-webkit-justify-content:center;justify-content:center;-webkit-flex-wrap:wrap;flex-wrap:wrap;margin-bottom:12px}
+
+/* EMBER MOMENT CARD */
+.ember-moment-box{background:linear-gradient(160deg,rgba(60,20,10,.98),rgba(40,10,5,.99));border-radius:24px;padding:28px 22px;margin-bottom:16px;border:1px solid rgba(201,168,76,.5);box-shadow:0 8px 50px rgba(201,168,76,.2)}
+.ember-moment-label{text-align:center;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:#c9a84c;margin-bottom:14px}
+.ember-moment-text{font-size:18px;line-height:1.85;color:#fff8e8;text-align:center;font-style:italic}
+
+/* CHECKIN CARD */
+.checkin-box{background:linear-gradient(160deg,rgba(10,30,55,.98),rgba(5,18,40,.99));border-radius:24px;padding:28px 22px;margin-bottom:16px;border:1px solid rgba(106,176,232,.4);box-shadow:0 8px 50px rgba(106,176,232,.15)}
+.checkin-label{text-align:center;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:#6ab0e8;margin-bottom:14px}
+.checkin-text{font-size:17px;line-height:1.8;color:#e0f0ff;text-align:center}
+.checkin-timer-note{text-align:center;font-size:12px;color:#4a7a9a;font-style:italic;margin-top:12px}
+
+/* FAVOURITES */
+.fav-btn{background:none;border:none;font-size:22px;cursor:pointer;padding:4px 8px;opacity:.4;-webkit-transition:background .2s,border-color .2s,opacity .2s;transition:background .2s,border-color .2s,opacity .2s;display:block;margin:0 auto 4px}
+.fav-btn.faved{opacity:1;transform:scale(1.2)}
+.favs-list{display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;margin-right:10px;margin-top:8px}
+.fav-item{background:rgba(255,255,255,.04);border:1px solid rgba(180,100,220,.15);border-radius:12px;padding:12px 14px}
+.fav-item-text{font-size:13px;color:#d0b0e8;line-height:1.6}
+.fav-item-meta{font-size:10px;color:#5a3a6a;margin-top:4px;letter-spacing:.06em}
+.empty-favs{text-align:center;font-size:13px;color:#4a2a6a;font-style:italic;padding:20px 0}
+
+/* TIMER */
+.timer-box{text-align:center;margin:16px 0 4px}
+.timer-digits{font-size:34px;font-weight:600;font-family:monospace;color:#d8b8f0}
+.timer-digits.urgent{color:#ff6b6b}
+.timer-bar{height:4px;background:rgba(255,255,255,.08);border-radius:2px;margin:8px 0 12px;overflow:hidden}
+.timer-fill{height:100%;background:linear-gradient(90deg,#9b1f4a,#c23358);border-radius:2px;-webkit-transition:width 1s linear;transition:width 1s linear}
+.timer-fill.urgent{background:#ff4444}
+.timer-btn{padding:8px 20px;border-radius:20px;border:1px solid rgba(194,51,88,.5);font-size:13px;font-family:Georgia,serif;cursor:pointer}
+
+/* HEAT */
+.heat-row{display:-webkit-flex;display:flex;margin-right:8px;margin-bottom:20px}
+.heat-btn{flex:1;padding:10px 6px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);cursor:pointer;text-align:center}
+.heat-btn .hfire{font-size:15px}
+.heat-btn .hlbl{font-size:10px;font-weight:600;color:#4a2a6a;margin-top:3px}
+
+/* HOW TO PLAY */
+.htp-step{display:-webkit-flex;display:flex;margin-right:14px;-webkit-align-items:flex-start;align-items:flex-start;margin-bottom:16px;padding:14px;background:rgba(255,255,255,.04);border:1px solid rgba(180,100,220,.15);border-radius:16px}
+.htp-num{width:30px;height:30px;min-width:30px;border-radius:50%;background:linear-gradient(135deg,#9b1f4a,#c23358);display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;font-size:13px;font-weight:600;color:#fff;font-family:sans-serif}
+.htp-body .htp-title{font-size:14px;font-weight:600;color:#d0b0e8;margin-bottom:3px}
+.htp-body .htp-desc{font-size:12px;color:#8060a0;line-height:1.6}
+.htp-pts{display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;margin-right:8px;margin:12px 0}
+.pts-pill{padding:5px 11px;border-radius:20px;font-size:11px;font-family:sans-serif;font-weight:600}
+.htp-modes{display:-webkit-flex;display:flex;-webkit--webkit-flex-wrap:wrap;flex-wrap:wrap;-webkit-flex-wrap:wrap;flex-wrap:wrap;margin:12px 0}
+.mode-card{padding:11px 8px;border-radius:12px;text-align:center;border:1px solid rgba(255,255,255,.08);width:calc(50% - 4px);margin:0 4px 8px 0}
+.mode-card .micon{font-size:18px;margin-bottom:3px}
+.mode-card .mtitle{font-size:11px;font-weight:600;margin-bottom:2px}
+.mode-card .mdesc{font-size:10px;opacity:.7;line-height:1.3}
+
+/* WINNER SCREEN */
+.winner-screen{text-align:center;padding-top:20px}
+.winner-crown{font-size:60px;margin-bottom:8px;-webkit-animation:crownBounce 1.2s ease infinite;animation:crownBounce 1.2s ease infinite}
+@-webkit-keyframes crownBounce{
+0%,100%{-webkit-transform:translateY(0) scale(1)}50%{-webkit-transform:translateY(-8px) scale(1.08)}}
+@keyframes crownBounce{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-8px) scale(1.08)}}
+.winner-name{font-size:30px;font-weight:400;font-style:italic;color:#c9a84c;margin-bottom:4px}
+.winner-title{font-size:11px;color:#7a5a3a;letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px}
+.winner-score-box{display:-webkit-flex;display:flex;margin-right:16px;-webkit-justify-content:center;justify-content:center;margin:14px 0}
+.wscore{text-align:center}
+.wscore .wval{font-size:28px;font-weight:600;color:#e8679a;font-family:Georgia,serif}
+.wscore .wlbl{font-size:10px;color:#5a3a6a;text-transform:uppercase;letter-spacing:.12em}
+.reward-box{background:linear-gradient(160deg,rgba(40,15,65,.95),rgba(25,8,45,.98));border:1px solid rgba(201,168,76,.35);border-radius:22px;padding:24px 20px;margin:16px 0;position:relative}
+.reward-box::before{content:'✦';position:absolute;top:12px;left:16px;color:#c9a84c;opacity:.4;font-size:12px}
+.reward-box::after{content:'✦';position:absolute;bottom:12px;right:16px;color:#c9a84c;opacity:.4;font-size:12px}
+.reward-label{font-size:10px;color:#a07828;letter-spacing:.2em;text-transform:uppercase;margin-bottom:10px}
+.reward-text{font-size:15px;line-height:1.8;color:#ede0f8;font-style:italic}
+.loser-note{font-size:12px;color:#5a3a6a;font-style:italic;margin:6px 0 16px;line-height:1.6}
+
+/* AFTERGLOW SCREEN */
+.afterglow-wrap{text-align:center;padding-top:16px}
+.afterglow-icon{font-size:50px;margin-bottom:10px}
+.afterglow-title{font-size:26px;font-weight:400;font-style:italic;color:#c9a84c;margin-bottom:4px}
+.afterglow-sub{font-size:11px;color:#7a5a3a;letter-spacing:.18em;text-transform:uppercase;margin-bottom:16px}
+.afterglow-stats{display:-webkit-flex;display:flex;margin-right:8px;-webkit-justify-content:center;justify-content:center;-webkit-flex-wrap:wrap;flex-wrap:wrap;margin:16px 0}
+.ag-stat{background:rgba(255,255,255,.05);border:1px solid rgba(180,100,220,.2);border-radius:14px;padding:14px 16px;text-align:center;min-width:80px}
+.ag-val{font-size:26px;font-weight:600;color:#e8679a;display:block;font-family:Georgia,serif}
+.ag-lbl{font-size:10px;color:#5a3a6a;text-transform:uppercase;letter-spacing:.1em;display:block;margin-top:2px}
+.afterglow-quote{background:linear-gradient(160deg,rgba(40,15,65,.95),rgba(25,8,45,.98));border:1px solid rgba(201,168,76,.25);border-radius:18px;padding:22px 20px;margin:16px 0;font-size:15px;line-height:1.8;color:#d8b8f0;font-style:italic}
+.afterglow-fav-row{background:rgba(255,255,255,.04);border:1px solid rgba(180,100,220,.15);border-radius:14px;padding:14px;margin-bottom:16px;text-align:left}
+.afterglow-fav-title{font-size:10px;color:#6a4a7a;text-transform:uppercase;letter-spacing:.15em;margin-bottom:10px;text-align:center}
+
+/* CONFETTI */
+.confetti{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:10}
+
+
+
+
+
+
+/* AGE GATE — simple full page, no fixed positioning */
+#agegate{display:block;min-height:100vh;background:linear-gradient(160deg,#0a0514 0%,#180a2a 50%,#0d0520 100%);padding:40px 20px 60px}
+#agegate.hidden{display:none}
+.age-center{max-width:400px;margin:0 auto;text-align:center}
+.age-logo{font-size:52px;margin-bottom:10px}
+.age-title{font-size:36px;font-weight:400;font-style:italic;color:#f0e6f6;margin-bottom:4px}
+.age-tagline{font-size:11px;color:#6a4a8a;letter-spacing:.2em;text-transform:uppercase}
+.age-gold{width:60px;height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);margin:14px auto 22px}
+.age-notice{font-size:14px;line-height:1.75;color:#b090c8;margin-bottom:20px;text-align:center}
+.age-notice strong{color:#e8d0f8}
+.age-btn{display:block;width:100%;padding:16px 14px;margin-bottom:12px;border-radius:14px;border:2px solid rgba(194,51,88,.4);background:rgba(80,20,50,.35);color:#c0a0c8;font-size:14px;font-family:Georgia,serif;text-align:left;line-height:1.55;-webkit-appearance:none;appearance:none;cursor:pointer}
+.age-btn strong{color:#e8d0f8}
+.age-btn.on{border-color:#c23358;background:rgba(194,51,88,.25);color:#f0d0e0}
+.age-enter-btn{display:block;width:100%;padding:16px;margin-top:6px;border-radius:32px;border:2px solid rgba(194,51,88,.3);background:rgba(60,10,30,.4);color:rgba(180,100,140,.5);font-size:16px;font-family:Georgia,serif;-webkit-appearance:none;appearance:none;cursor:pointer;text-align:center;letter-spacing:.05em}
+.age-enter-btn.on{background:linear-gradient(135deg,#7a1a3a,#c23358);color:#fff;border-color:#c23358}
+.age-footer-txt{font-size:10px;color:#3a1a4a;line-height:1.8;margin-top:16px;text-align:center}
+
+
+
+
+
+/* ── AGE GATE — pure CSS, zero JavaScript required ── */
+#agegate{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(160deg,#0a0514,#180a2a);z-index:9999;overflow-y:auto;-webkit-overflow-scrolling:touch;display:block}
+#agegate.gone{display:none}
+
+/* Hide the actual checkboxes */
+.ag-chk{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+
+/* Style the labels as tappable buttons */
+.ag-label{display:block;width:100%;padding:13px 14px;margin-bottom:10px;border-radius:12px;border:1.5px solid rgba(194,51,88,.35);background:rgba(80,20,50,.4);color:#b090c8;font-size:13px;font-family:Georgia,serif;line-height:1.55;cursor:pointer;-webkit-tap-highlight-color:rgba(194,51,88,.3);box-sizing:border-box}
+.ag-label strong{color:#e0b0d0}
+.ag-dot{display:inline-block;width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(194,51,88,.5);background:transparent;margin-right:8px;vertical-align:middle;position:relative;top:-1px;-webkit-transition:all .15s;transition:all .15s}
+
+/* When checked — label turns red */
+.ag-chk:checked + .ag-label{border-color:#c23358;background:rgba(194,51,88,.22);color:#f0d8e8}
+.ag-chk:checked + .ag-label .ag-dot{background:#c23358;border-color:#c23358}
+.ag-chk:checked + .ag-label .ag-dot::after{content:'\2713';position:absolute;top:-1px;left:3px;color:#fff;font-size:12px;font-weight:700}
+
+/* Enter button — only shown when all 3 are checked using CSS sibling selectors */
+.ag-enter-wrap{margin-top:4px}
+.ag-enter-btn{display:block;width:100%;padding:15px;border-radius:30px;border:1.5px solid rgba(194,51,88,.3);background:rgba(60,10,30,.5);color:rgba(160,90,120,.55);font-size:16px;font-family:Georgia,serif;text-align:center;letter-spacing:.04em;cursor:pointer;-webkit-appearance:none;appearance:none;pointer-events:none}
+
+/* Only make Enter active when all 3 checkboxes checked */
+#c1:checked ~ #c2:checked ~ #c3:checked ~ .ag-inner .ag-enter-btn,
+#c1:checked ~ * #c2:checked ~ * #c3:checked ~ .ag-enter-btn{background:linear-gradient(135deg,#7a1a3a,#c23358);color:#fff;border-color:#c23358;pointer-events:auto}
+
+/* CSS-only trick: use a hidden link as the "enter" action */
+.ag-go-link{display:none}
+
+
+/* When all 3 checkboxes are checked, activate the enter button via CSS */
+#c1:checked ~ * ~ * ~ * ~ * ~ * .ag-enter-btn,
+#agegate:has(#c1:checked):has(#c2:checked):has(#c3:checked) .ag-enter-btn{
+  background:linear-gradient(135deg,#7a1a3a,#c23358) !important;
+  color:#fff !important;
+  border-color:#c23358 !important;
+  pointer-events:auto !important;
+}
+/* Also update onclick to call goNow after checkboxes change */
+
+
+</style>
+</head>
+<body>
+
+
+<!-- ═══ AGE GATE ═══ -->
+<div id="agegate" id="agegate">
+  <div style="max-width:400px;margin:0 auto;padding:32px 20px 24px;text-align:center">
+    <div style="font-size:40px;margin-bottom:6px">&#128293;</div>
+    <div style="font-size:30px;font-weight:400;font-style:italic;color:#f0e6f6;margin-bottom:2px">Ember</div>
+    <div style="font-size:10px;color:#6a4a8a;letter-spacing:.18em;text-transform:uppercase;margin-bottom:10px">A game for two</div>
+    <div style="width:50px;height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);margin:0 auto 16px"></div>
+    <p style="font-size:13px;line-height:1.7;color:#b090c8;margin-bottom:18px">This game contains <strong style="color:#e8d0f8">adult content</strong> designed exclusively for consenting adults in a committed relationship. It includes mature themes, intimate questions, physical challenges and explicit content.</p>
+
+    <!-- Pure CSS checkbox trick — no JavaScript needed -->
+    <input class="ag-chk" type="checkbox" id="c1" onchange="updateEnter()">
+    <label class="ag-label" for="c1">
+      <span class="ag-dot"></span>I am <strong>18 years of age or older</strong> — or the legal age of majority in my country, whichever is higher.
+    </label>
+
+    <input class="ag-chk" type="checkbox" id="c2" onchange="updateEnter()">
+    <label class="ag-label" for="c2">
+      <span class="ag-dot"></span>I am <strong>legally permitted</strong> to access adult content in my country or region.
+    </label>
+
+    <input class="ag-chk" type="checkbox" id="c3" onchange="updateEnter()">
+    <label class="ag-label" for="c3">
+      <span class="ag-dot"></span>I accept full responsibility as a <strong>consenting adult in a private setting</strong>.
+    </label>
+
+    <div class="ag-enter-wrap">
+      <button class="ag-enter-btn" id="goBtn" onclick="goNow()">Confirm all three above first</button>
+    </div>
+
+    <div style="font-size:10px;color:#3a1a4a;line-height:1.8;margin-top:14px">
+      By continuing you agree to our Terms of Use.<br>
+      Strictly for adults aged 18+. Not suitable for minors.<br>
+      &#169; 2025 Ember &#8212; A Game for Two. All rights reserved.
+    </div>
+  </div>
+</div>
+
+<!-- ═══ HOW TO PLAY ═══ -->
+<div id="howtoplay" class="screen">
+  <div style="padding-top:16px">
+    <div class="ember-logo">🔥</div>
+    <h1>How to Play</h1>
+    <div class="subtitle">Ember — A Game for Two</div>
+    <div class="gold-line"></div>
+    <div class="htp-step"><div class="htp-num">1</div><div class="htp-body"><div class="htp-title">Set up your game</div><div class="htp-desc">Enter your names, pick your moods, choose your love languages, set a heat level and a points target. These shape the cards you receive all evening.</div></div></div>
+    <div class="htp-step"><div class="htp-num">2</div><div class="htp-body"><div class="htp-title">Take turns drawing cards</div><div class="htp-desc">Roll the dice for a random card, choose a level directly, or enter Truth · Dare · Command. You alternate turns after every card.</div></div></div>
+    <div class="htp-step"><div class="htp-num">3</div><div class="htp-body"><div class="htp-title">Complete challenges, earn points</div><div class="htp-desc">Tap Done to earn your points. Tap Skip to pass — no points awarded. Harder cards and timed cards earn more. Heart a card to save your favourites.</div></div></div>
+    <div class="htp-step"><div class="htp-num">4</div><div class="htp-body"><div class="htp-title">Watch for special cards</div><div class="htp-desc">✦ Ember Moments appear rarely and glow gold — they are the most intimate cards in the deck. 💬 Check In cards appear periodically — pause and be honest with each other.</div></div></div>
+    <div class="htp-step"><div class="htp-num">5</div><div class="htp-body"><div class="htp-title">First to the target wins</div><div class="htp-desc">When a player hits the target a Winner screen appears, the winner claims their reward, and your evening's Afterglow summary is revealed.</div></div></div>
+    <div class="wide-gold"></div>
+    <div class="sect-label" style="margin-bottom:10px">Points per card</div>
+    <div class="htp-pts">
+      <span class="pts-pill" style="background:rgba(106,176,232,.15);color:#a8d4f8">💙 Intimate: 1–2 pts</span>
+      <span class="pts-pill" style="background:rgba(232,160,96,.15);color:#f0c898">🧡 Passionate: 2–4 pts</span>
+      <span class="pts-pill" style="background:rgba(232,96,128,.15);color:#f0a0b8">❤️‍🔥 Steamy: 3–6 pts</span>
+      <span class="pts-pill" style="background:rgba(184,126,232,.15);color:#d4a8f8">💜 Wild: 4–8 pts</span>
+      <span class="pts-pill" style="background:rgba(201,168,76,.15);color:#c9a84c">💎🎯👑 TDC: 3–9 pts</span>
+    </div>
+    <div class="wide-gold"></div>
+    <div class="sect-label" style="margin-bottom:10px">Card types</div>
+    <div class="htp-modes">
+      <div class="mode-card" style="background:rgba(106,176,232,.08);border-color:rgba(106,176,232,.2)"><div class="micon">💬</div><div class="mtitle" style="color:#a8d4f8">Question</div><div class="mdesc" style="color:#6a90b0">Answer from the heart</div></div>
+      <div class="mode-card" style="background:rgba(232,160,96,.08);border-color:rgba(232,160,96,.2)"><div class="micon">🎯</div><div class="mtitle" style="color:#f0c898">Dare</div><div class="mdesc" style="color:#b08060">A physical challenge</div></div>
+      <div class="mode-card" style="background:rgba(184,126,232,.08);border-color:rgba(184,126,232,.2)"><div class="micon">✨</div><div class="mtitle" style="color:#d4a8f8">Fantasy</div><div class="mdesc" style="color:#9070b0">Share your desires</div></div>
+      <div class="mode-card" style="background:rgba(232,96,128,.08);border-color:rgba(232,96,128,.2)"><div class="micon">🎭</div><div class="mtitle" style="color:#f0a0b8">Roleplay</div><div class="mdesc" style="color:#b06080">Step into a scene</div></div>
+      <div class="mode-card" style="background:rgba(232,160,192,.08);border-color:rgba(232,160,192,.2)"><div class="micon">💞</div><div class="mtitle" style="color:#e8c0d8">Together</div><div class="mdesc" style="color:#9070a0">Both at once</div></div>
+      <div class="mode-card" style="background:rgba(201,168,76,.1);border-color:rgba(201,168,76,.3)"><div class="micon">✦</div><div class="mtitle" style="color:#c9a84c">Ember Moment</div><div class="mdesc" style="color:#9a7830">Rare & unforgettable</div></div>
+      <div class="mode-card" style="background:rgba(106,176,232,.08);border-color:rgba(106,176,232,.2)"><div class="micon">🫶</div><div class="mtitle" style="color:#a8d4f8">Check In</div><div class="mdesc" style="color:#6a90b0">Pause & connect</div></div>
+      <div class="mode-card" style="background:rgba(184,126,232,.1);border-color:rgba(184,126,232,.3)"><div class="micon">👑</div><div class="mtitle" style="color:#d4a8f8">Command</div><div class="mdesc" style="color:#9070b0">An order to obey</div></div>
+    </div>
+    <div class="wide-gold"></div>
+    <p style="font-size:12px;color:#5a3a6a;text-align:center;line-height:1.8;margin-bottom:22px;font-style:italic">Consent always comes first. Skip anything that does not feel right.<br>This game is about connection, honesty and pleasure.</p>
+    <button class="btn-main" onclick="showScreen('home')">Let's Set Up the Game ✦</button>
+    <div style="height:20px"></div>
+  </div>
+</div>
+
+<!-- ═══ HOME ═══ -->
+<div id="home" class="screen">
+  <div style="padding-top:28px">
+    <div class="ember-logo">🔥</div>
+    <h1>Ember</h1>
+    <div class="subtitle">A game for two</div>
+    <div class="gold-line"></div>
+
+    <div class="name-row">
+      <div class="name-col"><span class="nicon">💋</span><input id="p1name" value="Player 1"/></div>
+      <div class="name-col"><span class="nicon">💙</span><input id="p2name" value="Player 2"/></div>
+    </div>
+
+    <div class="sect-label" style="margin-bottom:6px">How are you both feeling tonight?</div>
+    <div class="mood-hint">Choose as many as apply — we'll tailor the game to your mood</div>
+    <div class="mood-grid" id="moodGrid"></div>
+
+    <div class="sect-label" style="margin-bottom:6px">Love languages</div>
+    <div class="ll-section">
+      <div class="ll-player-label" id="llLabel1">💋 Player 1's love language</div>
+      <div class="ll-row" id="llRow1a"></div>
+      <div class="ll-row" style="margin-top:8px" id="llRow1b"></div>
+    </div>
+    <div class="ll-section">
+      <div class="ll-player-label" id="llLabel2">💙 Player 2's love language</div>
+      <div class="ll-row" id="llRow2a"></div>
+      <div class="ll-row" style="margin-top:8px" id="llRow2b"></div>
+    </div>
+
+    <div class="sect-label" style="margin-bottom:10px">Maximum heat level</div>
+    <div class="level-grid" id="levelGrid"></div>
+
+    <div class="sect-label" style="margin-bottom:10px">Points target to win</div>
+    <div class="target-row" id="targetRow"></div>
+
+    <button class="btn-main" onclick="startGame()">Begin the Game ✦</button>
+    <div style="text-align:center;margin-top:12px">
+      <button class="btn-ghost" onclick="showScreen('howtoplay')">How to play →</button>
+    </div>
+    <p style="font-size:11px;color:#3a1a4a;text-align:center;margin-top:10px;letter-spacing:.08em">18+ only · Consent is everything · Play together</p>
+  </div>
+</div>
+
+<!-- ═══ GAME ═══ -->
+<div id="game" class="screen">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <button class="btn-back" style="margin:0" onclick="showScreen('home')">← Settings</button>
+    <div style="text-align:center"><div style="font-size:13px;color:#9a6ab0;font-style:italic">Ember</div><div class="round-lbl" id="roundLbl">Round 1</div></div>
+    <button class="btn-ghost" onclick="showScreen('favs')" style="font-size:18px;padding:2px">🤍</button>
+  </div>
+  <div class="mood-banner" id="moodBanner"></div>
+  <div class="score-row" id="scoreRow"></div>
+  <div class="progress-wrap" id="progressWrap"></div>
+  <div class="dice-area">
+    <p class="turn-lbl" id="turnLbl">Your turn</p>
+    <span class="dice-face" id="diceFace" onclick="rollDice()">⚀</span>
+    <button class="btn-main" id="rollBtn" onclick="rollDice()">🎲 Roll the Dice</button>
+  </div>
+  <div class="divider">
+    <div class="sect-label">or choose a level directly</div>
+    <div class="chip-row" id="levelChips"></div>
+  </div>
+  <div class="divider">
+    <button class="tdc-btn" onclick="showScreen('tdc')">💎 &nbsp;🎯 &nbsp;👑 &nbsp;&nbsp; Truth · Dare · Command</button>
+    <p style="font-size:11px;color:#4a2a6a;text-align:center;margin-top:7px;font-style:italic">The game within the game</p>
+  </div>
+</div>
+
+<!-- ═══ TDC ═══ -->
+<div id="tdc" class="screen">
+  <button class="btn-back" onclick="showScreen('game')">← Back to game</button>
+  <div style="text-align:center;margin-bottom:20px">
+    <div style="font-size:26px;letter-spacing:.2em">💎 🎯 👑</div>
+    <h2 style="margin-top:8px">Truth · Dare · Command</h2>
+    <p style="font-size:13px;color:#6a4a7a;margin-top:4px;font-style:italic" id="tdcTurnLbl">Your turn</p>
+    <div class="gold-line"></div>
+  </div>
+  <div class="sect-label">Select heat level</div>
+  <div class="heat-row" id="heatRow"></div>
+  <div id="tdcButtons"></div>
+</div>
+
+<!-- ═══ CARD ═══ -->
+<div id="cardScreen" class="screen">
+  <button class="btn-back" id="cardBack" onclick="cardGoBack()">← Back</button>
+  <div class="ornament" id="cardOrnament">✦ &nbsp; ✦ &nbsp; ✦</div>
+  <div id="cardBoxWrap"></div>
+  <div class="card-who" id="cardWho"></div>
+  <button class="fav-btn" id="favBtn" onclick="toggleFav()" title="Save to favourites">🤍</button>
+  <div class="action-row">
+    <button class="btn-main" id="cardDoneBtn" onclick="cardDone()">Done! +0 pts</button>
+    <button class="btn-outline" onclick="cardSkip()">Skip</button>
+  </div>
+  <div style="text-align:center;margin-top:6px">
+    <button class="btn-ghost" id="redrawBtn" onclick="cardRedraw()">Draw a different card →</button>
+  </div>
+</div>
+
+<!-- ═══ FAVOURITES ═══ -->
+<div id="favs" class="screen">
+  <button class="btn-back" onclick="showScreen('game')">← Back to game</button>
+  <div style="text-align:center;margin-bottom:20px">
+    <div style="font-size:30px">🤍</div>
+    <h2>Saved Cards</h2>
+    <p style="font-size:13px;color:#6a4a7a;margin-top:4px;font-style:italic">Your favourite moments from tonight</p>
+    <div class="gold-line"></div>
+  </div>
+  <div id="favsList"></div>
+</div>
+
+<!-- ═══ WINNER ═══ -->
+<div id="winnerScreen" class="screen">
+  <canvas class="confetti" id="confettiCanvas" style="width:100%;height:100%"></canvas>
+  <div class="winner-screen">
+    <div class="winner-crown">👑</div>
+    <div class="winner-name" id="winnerName">Player 1</div>
+    <div class="winner-title">Claims Victory</div>
+    <div class="gold-line"></div>
+    <div class="winner-score-box" id="winnerScores"></div>
+    <div class="wide-gold"></div>
+    <div class="reward-box">
+      <div class="reward-label">✦ &nbsp; Your Winner's Reward &nbsp; ✦</div>
+      <div class="reward-text" id="rewardText"></div>
+    </div>
+    <div class="loser-note" id="loserNote"></div>
+    <button class="btn-ghost" style="margin-bottom:10px" onclick="showAfterGlow()">See tonight's afterglow →</button>
+    <button class="btn-gold" onclick="playAgain()" style="margin-bottom:14px">Play Again ✦</button>
+    <button class="btn-ghost" onclick="showScreen('home')">Change settings</button>
+  </div>
+</div>
+
+<!-- ═══ AFTERGLOW ═══ -->
+<div id="afterglow" class="screen">
+  <div class="afterglow-wrap">
+    <div class="afterglow-icon">🌙</div>
+    <div class="afterglow-title">Tonight's Ember</div>
+    <div class="afterglow-sub">Your evening, remembered</div>
+    <div class="wide-gold"></div>
+    <div class="afterglow-stats" id="afterglowStats"></div>
+    <div class="afterglow-quote" id="afterglowQuote"></div>
+    <div id="afterglowFavs"></div>
+    <button class="btn-main" onclick="playAgain()" style="margin-bottom:14px">Play Again ✦</button>
+    <button class="btn-ghost" onclick="showScreen('home')">Change settings</button>
+    <div style="height:20px"></div>
+  </div>
+</div>
+
+
+<script>
+
+// ── SERVICE WORKER ────────────────────────────────────────────────────────────
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('service-worker.js')
+      .then(function(r){console.log('SW ok:',r.scope);})
+      .catch(function(e){console.log('SW fail:',e);});
+  });
+}
+
+// ── INSTALL PROMPT ────────────────────────────────────────────────────────────
+var deferredPrompt=null;
+var isStandalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault(); deferredPrompt=e;
+  if(!isStandalone&&!localStorage.getItem('ember_nodismiss')){
+    setTimeout(function(){document.getElementById('installBanner').classList.add('show');},3500);
+  }
+});
+
+function installApp(){
+  var banner=document.getElementById('installBanner');
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(c){
+      if(c.outcome==='accepted') banner.classList.remove('show');
+      deferredPrompt=null;
+    });
+  } else {
+    var isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase());
+    if(isIOS){
+      alert('Add Ember to your home screen:\n\n1. Tap the Share button at the bottom of Safari\n2. Tap "Add to Home Screen"\n3. Tap "Add"\n\nEmber will appear on your home screen and work offline!');
+    }
+    banner.classList.remove('show');
+  }
+}
+function dismissInstall(){
+  document.getElementById('installBanner').classList.remove('show');
+  localStorage.setItem('ember_nodismiss','1');
+}
+
+// iOS install nudge
+window.addEventListener('load',function(){
+  var isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase());
+  if(isIOS&&!isStandalone&&!localStorage.getItem('ember_nodismiss')){
+    setTimeout(function(){document.getElementById('installBanner').classList.add('show');},4000);
+  }
+});
+
+
+// ── MOOD CONFIG ───────────────────────────────────────────────────────────────
+var MOODS = [
+  {id:'reconnect', icon:'🫶', name:'Reconnect',    desc:'We need to find each other again', color:'#6ab0e8', rgb:'106,176,232', levelBias:[1,1,2,2],   typeBias:['question','together']},
+  {id:'spice',     icon:'🔥', name:'Spice It Up',  desc:'Things have gotten too routine',   color:'#e86080', rgb:'232,96,128',  levelBias:[3,3,4,4],   typeBias:['dare','fantasy','roleplay']},
+  {id:'deep',      icon:'💎', name:'Go Deep',      desc:'We want to really talk and feel',  color:'#b87ee8', rgb:'184,126,232', levelBias:[1,2,2,3],   typeBias:['question','fantasy','together']},
+  {id:'fun',       icon:'😄', name:'Just Have Fun',desc:'Light, playful, no pressure',      color:'#e8a060', rgb:'232,160,96',  levelBias:[1,2,2,2],   typeBias:['dare','roleplay','together']},
+  {id:'desire',    icon:'💋', name:'Pure Desire',  desc:'We want to feel wanted tonight',   color:'#c23358', rgb:'194,51,88',   levelBias:[2,3,3,4],   typeBias:['dare','command','fantasy']},
+  {id:'tender',    icon:'🌹', name:'Be Tender',    desc:'Soft, slow and loving tonight',    color:'#f0a0b8', rgb:'240,160,184', levelBias:[1,1,1,2],   typeBias:['question','together','fantasy']},
+];
+
+// ── LOVE LANGUAGE CONFIG ──────────────────────────────────────────────────────
+var LOVE_LANGS = [
+  {id:'words',   icon:'💬', name:'Words of Affirmation'},
+  {id:'touch',   icon:'🤝', name:'Physical Touch'},
+  {id:'time',    icon:'⏳', name:'Quality Time'},
+  {id:'acts',    icon:'🛠️', name:'Acts of Service'},
+  {id:'gifts',   icon:'🎁', name:'Receiving Gifts'},
+];
+
+// ── EMBER MOMENTS (rare golden cards) ────────────────────────────────────────
+var EMBER_MOMENTS = [
+  "Look at your partner right now. Tell them — out loud, slowly — exactly who they are to you. Not what they do. Who they are.",
+  "Put your foreheads together and breathe in the same rhythm for 60 seconds. No talking. Just be here.",
+  "Tell your partner the one moment you were most proud of them that you never told them about.",
+  "Take your partner's hand and trace a slow path from their wrist to their shoulder with one fingertip. Tell them what you are thinking as you do it.",
+  "What is the one sentence — if you could only ever say one thing to this person — that it would be?",
+  "Tell your partner about the version of your future you dream about most. Put them in it. Be specific.",
+  "Close your eyes. Your partner places both hands on your face. Stay like that in silence for 30 seconds. Then tell them how it felt.",
+  "Say out loud the one thing you are most grateful for about this specific person — not the relationship. The person.",
+  "Hold your partner from behind, arms wrapped all the way around them. Press your lips to the back of their neck and stay there in silence for 60 seconds. Do not explain it. Just hold.",
+  "Each of you finishes this sentence out loud, slowly: the most honest thing I can tell you about loving you is...",
+  "Tell your partner about the version of yourself you are most afraid to show — then show it, right now, even just for a moment.",
+];
+
+// ── CHECK IN CARDS ────────────────────────────────────────────────────────────
+var CHECKINS = [
+  "Pause the game. Each of you takes 90 seconds to answer honestly: how are you actually feeling right now — about us, about tonight, about life? No judgment, no fixing. Just listening.",
+  "Check in: on a scale of 1 to 10, how present are you feeling tonight? Share your number and one sentence about why.",
+  "A moment of honesty: is there anything unsaid between us right now — big or small — that you want to put on the table before we continue?",
+  "Tell your partner one thing they have done recently that made you feel genuinely loved. Something specific. Something real.",
+  "Check in: what do you need most from your partner tonight? Not in general — tonight, right now, in this moment.",
+  "Check in: has anything happened in the last week that created distance between you — even a small thing? Name it gently and then let it go.",
+  "Right now, what percentage of you is here — fully present, with this person, on this night? Be honest. What would bring that number higher?",
+  "Tell your partner one thing about how you are feeling about your relationship right now that is true, even if it is complicated.",
+];
+
+// ── WINNER REWARDS ────────────────────────────────────────────────────────────
+var REWARDS = [
+  "Your partner must give you a full body massage of your choice — minimum 20 minutes, no rushing.",
+  "You choose the music, the lighting and the room. Your partner sets the scene exactly as you describe and joins you.",
+  "Name one thing you have been wanting your partner to do to you. They owe it to you — tonight, no questions asked.",
+  "Your partner must write you a handwritten note describing exactly what they love about you. You receive it before sleep.",
+  "You pick a fantasy you have hinted at but never fully explored. Your partner must say yes to at least one element tonight.",
+  "Your partner owes you 30 minutes of complete undivided attention — no phones, no distractions — doing whatever you want.",
+  "You get to direct tonight entirely. The mood, the pace, the sequence — all yours to decide. Your partner follows your lead.",
+  "Name the one physical thing you most want from your partner right now. They must deliver it exactly as you describe.",
+  "Your partner owes you breakfast in bed tomorrow and must stay with you as long as you want.",
+  "Choose one room. Your partner transforms it into the most romantic space they can manage. You walk in and enjoy it.",
+];
+
+// ── AFTERGLOW QUOTES ──────────────────────────────────────────────────────────
+var AFTERGLOW_QUOTES = [
+  "Tonight you chose each other — deliberately, playfully, honestly. That is not nothing. That is everything.",
+  "Every question answered, every dare accepted, every moment of honesty — all of it brought you closer. Remember this feeling.",
+  "You laughed, you revealed, you touched, you listened. This is what connection looks like when you stop being busy.",
+  "Whatever happens next begins here — in this room, on this night, with this person.",
+  "The spark was always there. Tonight you just remembered where it lives.",
+];
+
+// ── ALL CARDS ─────────────────────────────────────────────────────────────────
+var ALL_CARDS = [
+  {level:1,type:"question",text:"What was the first thing you noticed about me that made you want to know more?"},
+  {level:1,type:"question",text:"Describe the moment you first felt truly comfortable being yourself around me."},
+  {level:1,type:"question",text:"What small thing do I do every day that you secretly love but have never told me?"},
+  {level:1,type:"question",text:"What is the most romantic thing I have ever done that you still think about?"},
+  {level:1,type:"question",text:"What do you think is our greatest strength as a couple?"},
+  {level:1,type:"question",text:"If you had to describe us in three words what would they be and why?"},
+  {level:1,type:"dare",text:"Give your partner the longest most genuine hug you have given them in months. Hold for 60 seconds.",timer:60},
+  {level:1,type:"dare",text:"Look your partner in the eyes and tell them three specific things you admire about who they are."},
+  {level:1,type:"dare",text:"Give your partner a slow hand and wrist massage for two full minutes.",timer:120},
+  {level:1,type:"dare",text:"Slow dance together to whatever song plays next — no matter what it is."},
+  {level:1,type:"together",text:"Sit facing each other, hold both hands, and spend 60 seconds in silence — just looking at each other.",timer:60},
+  {level:1,type:"fantasy",text:"Describe your ideal romantic evening with your partner — from sunset to midnight. Spare no detail."},
+  {level:2,type:"question",text:"What part of my body do you find yourself sneaking glances at most often?"},
+  {level:2,type:"question",text:"What is one thing I do in bed that drives you absolutely crazy — in the best way?"},
+  {level:2,type:"question",text:"If you could relive one night together exactly as it was, which night would it be?"},
+  {level:2,type:"question",text:"What is something you have always wanted to try with me but have not suggested yet?"},
+  {level:2,type:"question",text:"What piece of clothing or lingerie on me do you absolutely love?"},
+  {level:2,type:"dare",text:"Kiss your partner slowly, starting at their forehead and working down to their collarbone. Take your time."},
+  {level:2,type:"dare",text:"Give your partner a full neck and back massage for 3 minutes.",timer:180},
+  {level:2,type:"dare",text:"Whisper slowly into your partner's ear exactly what you want to do to them later tonight."},
+  {level:2,type:"dare",text:"Spend 90 seconds kissing your partner's neck and shoulders — lips only, no hands.",timer:90},
+  {level:2,type:"fantasy",text:"Describe a romantic fantasy involving your partner — somewhere exotic, a mood, an occasion. Give every detail."},
+  {level:2,type:"together",text:"Take turns tracing fingertips along each other's arms, neck and face for 2 minutes each — eyes closed.",timer:120},
+  {level:2,type:"roleplay",text:"You are strangers who have just met at a bar and the chemistry is undeniable. Flirt for 5 minutes.",timer:300},
+  {level:2,type:"dare",text:"Blindfold your partner for 2 minutes. Use only your hands and your breath — no words, no lips.",timer:120},
+  {level:3,type:"question",text:"Tell me about a fantasy you have never acted on. Be completely honest — no judgment tonight."},
+  {level:3,type:"question",text:"What is the single most attractive thing I have ever done or said to you?"},
+  {level:3,type:"question",text:"Where on your body do you most want to be touched right now?"},
+  {level:3,type:"question",text:"What would you love me to take complete control of tonight? Describe exactly what that looks like."},
+  {level:3,type:"question",text:"Describe your favourite intimate memory of us in as much detail as you can."},
+  {level:3,type:"question",text:"What is one thing you wish I would initiate more often?"},
+  {level:3,type:"dare",text:"Give your partner a full body massage starting at their feet and working slowly upward. Minimum 5 minutes.",timer:300},
+  {level:3,type:"dare",text:"Strip down to your underwear and give your partner a slow confident walk across the room. Own every step."},
+  {level:3,type:"dare",text:"Tell your partner exactly what you want done to you right now. Speak slowly and clearly."},
+  {level:3,type:"dare",text:"Kiss your partner passionately for 2 full minutes — hands fully involved. No stopping.",timer:120},
+  {level:3,type:"dare",text:"Use only your lips to explore your partner from their shoulder to their hip. No rushing."},
+  {level:3,type:"fantasy",text:"Build a shared fantasy out loud together — one sentence each, back and forth, for 3 minutes.",timer:180},
+  {level:3,type:"roleplay",text:"You are a couple who just met at a hotel bar and you both know exactly where this is going. Play it out for 5 minutes.",timer:300},
+  {level:3,type:"together",text:"Undress each other slowly — taking turns removing one item at a time — until you decide to stop."},
+  {level:4,type:"question",text:"What is the most explicit fantasy you have had about me that you have never told me? Tonight you must say it."},
+  {level:4,type:"question",text:"If you could choose one location, one scenario and one thing I must wear tonight — what are they?"},
+  {level:4,type:"question",text:"Tell me the one thing — no limits, no judgment — that would make you feel completely desired tonight."},
+  {level:4,type:"dare",text:"Give your partner a lap dance. Confidence is the only skill required."},
+  {level:4,type:"dare",text:"Write what you want to give tonight and what you want to receive. Exchange papers simultaneously."},
+  {level:4,type:"dare",text:"Give your partner a sensual oil or lotion massage. Minimum 8 minutes, maximum imagination.",timer:480},
+  {level:4,type:"dare",text:"Set the scene right now — lighting, music, location — for exactly what you want to happen next.",timer:600},
+  {level:4,type:"roleplay",text:"Pick a roleplay you have both been quietly curious about and spend 10 minutes exploring it together.",timer:600},
+  {level:4,type:"fantasy",text:"Each describe your wildest fantasy, then negotiate which elements of both you will actually try tonight."},
+  {level:4,type:"together",text:"Make a real list: 3 things you each want before the night is over. Agree on it. Start with number one."},
+  {level:4,type:"together",text:"Put the game down. The next 15 minutes are entirely yours — no rules, no cards.",timer:900},
+
+  // ── NEW: Level 1 Questions (couples therapist lens — safety, appreciation, history)
+  {level:1,type:"question",text:"When did you last feel truly seen and understood by me — what was happening and what did I do?"},
+  {level:1,type:"question",text:"What is something you have been carrying lately that you have not found the right moment to share with me?"},
+  {level:1,type:"question",text:"If our relationship were a song, what part of the song are we in right now — the opening, the chorus, the bridge — and why?"},
+
+  // ── NEW: Level 1 Dares (gentle physical warmth, presence)
+  {level:1,type:"dare",text:"Sit behind your partner and hold them in silence for 90 seconds. Focus only on their breathing. No words.",timer:90},
+  {level:1,type:"dare",text:"Look your partner directly in the eyes and tell them one thing you have been meaning to say but kept putting off."},
+  {level:1,type:"dare",text:"Gently take your partner's hands, kiss each one slowly, and tell them one thing those hands mean to you."},
+
+  // ── NEW: Level 1 Together (shared presence, attunement)
+  {level:1,type:"together",text:"Sit back to back, spines touching. Take three slow deep breaths together in sync. Notice each other without speaking.",timer:60},
+  {level:1,type:"together",text:"Each of you writes down one word that describes how you feel about the other person right now. Reveal them at the same time."},
+
+  // ── NEW: Level 1 Fantasy (soft, romantic, safe)
+  {level:1,type:"fantasy",text:"Describe the place in the world where you would most love to be with your partner right now. What are you doing? What does it feel like?"},
+  {level:1,type:"fantasy",text:"Tell your partner about a simple ordinary moment with them that you secretly replay in your mind because it made you feel completely at peace."},
+
+  // ── NEW: Level 2 Questions (sex therapist lens — desire, attraction, noticing)
+  {level:2,type:"question",text:"What is the most attractive non-physical thing about me that you find yourself drawn to when we are intimate?"},
+  {level:2,type:"question",text:"Is there a time of day or a mood when you find me most irresistible? Describe it specifically."},
+  {level:2,type:"question",text:"What does feeling truly desired by me look like to you — not generally, but in the most honest detail you can give?"},
+
+  // ── NEW: Level 2 Dares (build anticipation, sensory focus)
+  {level:2,type:"dare",text:"Sit across from your partner and maintain eye contact for 60 seconds while slowly describing one thing you love about how they look right now.",timer:60},
+  {level:2,type:"dare",text:"Use both hands to trace your partner's face, neck and collarbones with your eyes closed, as if memorising them. Take a full two minutes.",timer:120},
+  {level:2,type:"dare",text:"Rest your lips against your partner's neck without kissing — just warmth and breath — for 60 seconds. Do not move.",timer:60},
+
+  // ── NEW: Level 2 Together (mutual vulnerability, shared sensation)
+  {level:2,type:"together",text:"Stand facing each other. Place one hand on each other's heart. Stand in silence for 45 seconds. Then each say one word about what you felt.",timer:45},
+  {level:2,type:"together",text:"Take turns telling each other one thing you find beautiful about how the other moves — the way they walk, gesture, carry themselves."},
+
+  // ── NEW: Level 2 Roleplay (playful, light, flirtatious)
+  {level:2,type:"roleplay",text:"You are both at a dinner party and completely forbidden from touching each other. Spend 5 minutes flirting using only your eyes, words and body language.",timer:300},
+  {level:2,type:"roleplay",text:"One of you is a photographer shooting a portrait session. The other is the subject. Spend 3 minutes directing — tell them exactly how to pose and why they look incredible.",timer:180},
+
+  // ── NEW: Level 2 Fantasy (imagination, shared desire)
+  {level:2,type:"fantasy",text:"Describe a fantasy that begins with something completely non-sexual — a dinner, a trip, a moment — but slowly becomes unmistakably intimate. Walk us through every detail."},
+
+  // ── NEW: Level 3 Questions (sex therapist — deep desire, vulnerability, ownership)
+  {level:3,type:"question",text:"What does it feel like in your body when you are most turned on by me? Describe the physical sensation as precisely as you can."},
+  {level:3,type:"question",text:"Is there a version of me — a mood, a look, an energy — that you find almost unbearably attractive? Tell me exactly what it is."},
+  {level:3,type:"question",text:"What is one boundary you have that you would be willing to gently explore or reconsider with me tonight, and what would make it feel safe to do so?"},
+
+  // ── NEW: Level 3 Dares (physical escalation, embodied presence)
+  {level:3,type:"dare",text:"Lie your partner down and spend 3 minutes using only your fingertips on their scalp, face and neck. Treat it like the most important thing you have ever done.",timer:180},
+  {level:3,type:"dare",text:"Whisper a detailed description of what you want to do next into your partner's ear — slowly, with full pauses between every sentence. Take at least 90 seconds.",timer:90},
+  {level:3,type:"dare",text:"Choose one part of your partner's body that you find deeply attractive and spend 2 minutes telling them — in complete detail — exactly why, while you touch it gently.",timer:120},
+
+  // ── NEW: Level 3 Together (mutual undoing, shared intensity)
+  {level:3,type:"together",text:"Both of you close your eyes. Without speaking, find each other's hands and hold them. Spend 60 seconds breathing together and deciding — without words — what comes next.",timer:60},
+  {level:3,type:"together",text:"Take turns: each of you names one thing the other does that makes you feel completely safe, and one thing that makes you feel completely alive."},
+
+  // ── NEW: Level 3 Roleplay (explicit scenario, power dynamic)
+  {level:3,type:"roleplay",text:"One of you plays the role of someone who has wanted the other for a long time but never said so. Tonight they finally say it. Play it out for 5 minutes — be honest, be bold.",timer:300},
+  {level:3,type:"roleplay",text:"You are on your honeymoon. It is the first night. Neither of you is in a hurry. Spend 5 minutes arriving — setting the scene, the atmosphere, the first touch.",timer:300},
+
+  // ── NEW: Level 3 Fantasy (explicit, co-created desire)
+  {level:3,type:"fantasy",text:"Describe a fantasy where you are completely in control. What do you ask for? What do you take? What does your partner do? Be as specific as you dare."},
+
+  // ── NEW: Level 4 Questions (uninhibited, no holding back)
+  {level:4,type:"question",text:"What is the one sexual experience you have never had but think about more than you admit? Be completely honest."},
+  {level:4,type:"question",text:"If you could change one thing about how we are intimate together — something you have never said because you were not sure how it would land — what would it be?"},
+  {level:4,type:"question",text:"Tell me about the most turned on you have ever been — with me or before me. What made it so intense and what would it take to feel that way tonight?"},
+
+  // ── NEW: Level 4 Dares (fully explicit, physical, bold)
+  {level:4,type:"dare",text:"Take your partner's face in your hands and tell them exactly — without softening a single word — what you are going to do to them. Then do it.",},
+  {level:4,type:"dare",text:"You have 10 minutes. No rules, no cards, no game. Do exactly what you have been thinking about all evening.",timer:600},
+  {level:4,type:"dare",text:"Ask your partner to tell you their one request for tonight — the real one, the one they have not said yet. Then grant it without hesitation."},
+
+  // ── NEW: Level 4 Together (surrendered, co-created, fully present)
+  {level:4,type:"together",text:"Agree on one word that means stop if either of you needs it. Now give each other full permission for the next 10 minutes to go wherever the night takes you.",timer:600},
+  {level:4,type:"together",text:"Each of you describes in explicit detail what tonight would look like at its absolute best. Then stop talking and make it happen."},
+
+  // ── NEW: Level 4 Fantasy (completely uninhibited)
+  {level:4,type:"fantasy",text:"Describe your most recurring intimate fantasy — the full version, every detail, nothing edited. Your partner listens without interrupting. Then they describe theirs."},
+  {level:4,type:"fantasy",text:"Create a fantasy together that neither of you has ever acted on. Take turns adding details until you have built something completely new. Decide together if tonight is the night."},
+
+  // ── NEW: Level 4 Roleplay (power, desire, explicit)
+  {level:4,type:"roleplay",text:"One of you plays the role of someone who gets exactly what they want tonight. The other plays someone who cannot say no. Stay in character for as long as it feels right."},
+];
+
+var TDC = {
+  truth:[
+    {heat:1,text:"What is the first physical thing you notice about me that still makes your heart race?"},
+    {heat:1,text:"Describe a moment this week when you looked at me and felt genuinely turned on."},
+    {heat:1,text:"What outfit or look of mine makes it hardest for you to keep your hands to yourself?"},
+    {heat:1,text:"Tell me one thing about our intimacy that secretly delights you but you have never said out loud."},
+    {heat:1,text:"What is the one word that best describes how I make you feel when we are close?"},
+    {heat:2,text:"What is something I do with my hands or mouth that you think about when we are apart?"},
+    {heat:2,text:"Describe in detail the last time you were alone and thought about me in a sexual way."},
+    {heat:2,text:"What part of your body most wants my attention right now — and exactly how do you want it touched?"},
+    {heat:2,text:"Tell me about a dream you have had about me. Be honest about every part of it."},
+    {heat:2,text:"What is the most daring place you have ever imagined us being intimate together?"},
+    {heat:2,text:"What do I do that makes you lose all ability to think straight?"},
+    {heat:3,text:"Describe in full detail exactly what you want me to do to you in the next 30 minutes."},
+    {heat:3,text:"What fantasy have you replayed in your mind more than once that involves me specifically?"},
+    {heat:3,text:"Tell me honestly — what is the one thing I do that makes you want to pull me into the bedroom immediately?"},
+    {heat:3,text:"If I told you I would do absolutely anything you asked tonight without question — what would you ask for first?"},
+    {heat:3,text:"Describe the version of tonight that would leave you completely satisfied. Spare nothing."},
+    // ── NEW: TDC Truth — Warming Up
+    {heat:1,text:"What is one thing I do outside the bedroom that you find unexpectedly attractive?"},
+    {heat:1,text:"When did you last feel genuinely proud of us as a couple? What were we doing?"},
+    {heat:1,text:"What does feeling emotionally safe with me allow you to do or feel that you could not with anyone else?"},
+    // ── NEW: TDC Truth — Heating Up
+    {heat:2,text:"What is the most intimate non-sexual thing we have ever shared, and why does it still move you?"},
+    {heat:2,text:"Tell me honestly — is there something you have been wanting to ask me about our physical relationship but have not known how to bring up?"},
+    {heat:2,text:"What does your body feel like in the moments just before we are intimate? Walk me through it honestly."},
+    // ── NEW: TDC Truth — On Fire
+    {heat:3,text:"What would you want me to do to you right now if you knew I would say yes to absolutely anything?"},
+    {heat:3,text:"Tell me the one thing about your own desire that you find hardest to admit out loud — even to me."},
+    {heat:3,text:"Describe in complete detail a moment when I made you feel so desired that you could barely think straight. What exactly did I do?"},
+  ],
+  dare:[
+    {heat:1,text:"Sit behind your partner, wrap your arms around them and breathe slowly on their neck for 60 seconds. No kissing.",timer:60},
+    {heat:1,text:"Take your partner's face in your hands and hold eye contact for 30 full seconds. Do not look away.",timer:30},
+    {heat:1,text:"Trace the outline of your partner's lips with one fingertip — slowly. Do not kiss them yet."},
+    {heat:1,text:"Run your hands slowly through your partner's hair for a full minute while they sit completely still.",timer:60},
+    {heat:2,text:"Kiss your partner's neck for 90 seconds — starting just below the ear. No other contact.",timer:90},
+    {heat:2,text:"Whisper the most specific honest thing you want to do to your partner tonight, directly into their ear. Take your time."},
+    {heat:2,text:"Give your partner a 3 minute massage on exactly the area they most want touched right now.",timer:180},
+    {heat:2,text:"Kiss your partner for 2 minutes. The rule: the slower the better. Make every second count.",timer:120},
+    {heat:2,text:"With your eyes closed, use only touch to explore your partner's face and neck for one full minute.",timer:60},
+    {heat:3,text:"Spend 3 minutes using only your mouth and breath on your partner's neck and collarbone — no hands, no rushing.",timer:180},
+    {heat:3,text:"Slowly remove one item of your own clothing while holding eye contact with your partner the entire time."},
+    {heat:3,text:"Lie down and var your partner trace any path they choose across your body using only their fingertips for 3 full minutes.",timer:180},
+    {heat:3,text:"Tell your partner exactly what to do to you — give clear instructions — for the next 5 minutes. They must follow every one.",timer:300},
+    {heat:3,text:"Give your partner a slow kiss from their lips to their jaw, down their neck, stopping above their collarbone. Take at least 2 minutes.",timer:120},
+    {heat:3,text:"Blindfold your partner and spend 4 minutes using only your lips on any part of their body you choose.",timer:240},
+    // ── NEW: TDC Dare — Warming Up
+    {heat:1,text:"Stand directly behind your partner and rest your chin gently on their shoulder for 60 seconds. Breathe together. Say nothing.",timer:60},
+    {heat:1,text:"Take your partner's hand and trace each finger slowly, one at a time. No words, just presence.",timer:60},
+    {heat:1,text:"Cup your partner's face gently in both hands and look at them for 30 seconds as if seeing them for the first time.",timer:30},
+    // ── NEW: TDC Dare — Heating Up
+    {heat:2,text:"Place one hand on your partner's chest and keep it there for 90 seconds while you tell them in a low voice exactly what you want from them tonight.",timer:90},
+    {heat:2,text:"Kiss your partner exactly the way you most want to be kissed right now — show them with your body what your words have not said.",},
+    {heat:2,text:"With your eyes closed, use only your lips to find your partner's pulse points — wrist, neck, temple. Take your time.",timer:120},
+    // ── NEW: TDC Dare — On Fire
+    {heat:3,text:"Undress your partner down to one layer using only your hands, moving as slowly as you possibly can. Maintain eye contact throughout."},
+    {heat:3,text:"Lie completely still and let your partner spend 4 minutes doing whatever they want to you. You are not allowed to react or respond. Just receive.",timer:240},
+    {heat:3,text:"Whisper a running commentary of exactly what you are feeling and thinking as you touch your partner for 3 minutes. Do not stop speaking.",timer:180},
+  ],
+  command:[
+    {heat:1,text:"Tell me one completely honest thing about your desire for me right now."},
+    {heat:1,text:"Move closer. Take my hand. Do not var go for the next 5 minutes.",timer:300},
+    {heat:1,text:"Look me in the eye and describe slowly what you find most attractive about me in this exact moment."},
+    {heat:2,text:"Sit in my lap facing me. Stay there for the next 3 minutes. No distractions.",timer:180},
+    {heat:2,text:"Kiss me in the way you most want to be kissed right now. Show me — do not hold back."},
+    {heat:2,text:"Tell me the most specific honest thing you want from me physically right now. One sentence. No softening it."},
+    {heat:2,text:"Stand up, move to the centre of the room, and slowly remove one item of clothing for me. Confidence only."},
+    {heat:2,text:"Give me a slow foot and calf massage for 3 minutes. Full presence — this is not a quick rub.",timer:180},
+    {heat:3,text:"Get behind me. Put your arms around me. Breathe on my neck. You are not allowed to move for 3 minutes.",timer:180},
+    {heat:3,text:"You have 5 minutes to use your hands and mouth however you wish on any part of my body.",timer:300},
+    {heat:3,text:"Tell me your most honest unfiltered fantasy about us. You must say it out loud, in full, right now."},
+    {heat:3,text:"Undress me — slowly, deliberately, one item at a time. You choose the order. Take as long as you want."},
+    {heat:3,text:"Lie me down. You have 5 minutes to do whatever you want to me. Make it memorable.",timer:300},
+    {heat:3,text:"Get close enough that our lips are almost touching. Hold that position in silence for 30 seconds. Do not kiss me yet.",timer:30},
+    {heat:3,text:"Tell me — out loud, with full eye contact — exactly what you are going to do to me tonight. Be specific. Leave nothing out."},
+    // ── NEW: TDC Command — Warming Up
+    {heat:1,text:"Come and sit next to me. Close enough that our legs are touching. Stay there for the rest of this turn.",},
+    {heat:1,text:"Tell me one thing you have been grateful for about me this week. Look me in the eye when you say it."},
+    {heat:1,text:"Take my hand and hold it against your face. Keep it there and tell me what it feels like.",timer:60},
+    // ── NEW: TDC Command — Heating Up
+    {heat:2,text:"Take off one item of my clothing of your choice. Do it slowly. Tell me why you chose that one.",},
+    {heat:2,text:"Put your hands on my waist and pull me toward you. Stay like that and tell me one thing you want from me tonight without any apology.",},
+    {heat:2,text:"Kneel in front of me and look up at me for 30 seconds. Then tell me one thing you see.",timer:30},
+    // ── NEW: TDC Command — On Fire
+    {heat:3,text:"Take complete control for the next 5 minutes. I will follow your lead entirely. You decide everything.",timer:300},
+    {heat:3,text:"Tell me exactly how you want to be touched right now — every detail, every instruction. I will do exactly what you say.",},
+    {heat:3,text:"Put your hands anywhere you want on my body and keep them there while you tell me what you are going to do next. Do not rush. Do not hold back.",},
+  ]
+};
+
+var LEVELS={
+  1:{label:"Intimate", color:"#6ab0e8",bg:"rgba(106,176,232,.15)",dark:"#a8d4f8",emoji:"💙",desc:"Tender",rgb:"106,176,232"},
+  2:{label:"Passionate",color:"#e8a060",bg:"rgba(232,160,96,.15)", dark:"#f0c898",emoji:"🧡",desc:"Flirtatious",rgb:"232,160,96"},
+  3:{label:"Steamy",   color:"#e86080",bg:"rgba(232,96,128,.15)",  dark:"#f0a0b8",emoji:"❤️‍🔥",desc:"Daring",rgb:"232,96,128"},
+  4:{label:"Wild",     color:"#b87ee8",bg:"rgba(184,126,232,.15)", dark:"#d4a8f8",emoji:"💜",desc:"Uninhibited",rgb:"184,126,232"},
+};
+var TYPES={question:"💬 Question",dare:"🎯 Dare",fantasy:"✨ Fantasy",roleplay:"🎭 Roleplay",together:"💞 Together"};
+var TDC_CFG={
+  truth:  {label:"Truth",  icon:"💎",color:"#6ab0e8",bg:"rgba(106,176,232,.12)",dark:"#a8d4f8",desc:"Deep honesty — answer with nothing held back"},
+  dare:   {label:"Dare",   icon:"🎯",color:"#e8a060",bg:"rgba(232,160,96,.12)", dark:"#f0c898",desc:"Physical, teasing, intimate challenges"},
+  command:{label:"Command",icon:"👑",color:"#b87ee8",bg:"rgba(184,126,232,.12)",dark:"#d4a8f8",desc:"An order to be obeyed — no negotiation"},
+};
+var HEAT={1:{label:"Warming Up",color:"#6ab0e8"},2:{label:"Heating Up",color:"#e8a060"},3:{label:"On Fire",color:"#e86080"}};
+var DICE_FACES=["⚀","⚁","⚂","⚃","⚄","⚅"];
+var TARGETS=[30,50,75];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+var state={
+  maxLevel:2, targetScore:50, who:1, round:1, scores:{1:0,2:0},
+  seen:[], tdcSeen:{truth:[],dare:[],command:[]},
+  rolling:false, card:null, cardSource:null, cardTdcType:null, tdcHeat:2,
+  timerSecs:0, timerRem:0, timerRunning:false, timerIv:null,
+  selectedMoods:[], ll:{1:'touch',2:'words'},
+  favourites:[], cardCount:0, checkInCounter:0, emberMomentSeen:[],
+  currentCardText:'', currentCardType:''
+};
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+window.onload=function(){
+  buildMoodGrid(); buildLLRows(); buildLevelGrid(); buildTargetRow();
+  buildLevelChips(); buildHeatRow(); buildTdcButtons();
+  setMaxLevel(2); setTarget(50);
+  updateLLLabels();
+};
+
+// ── AGE GATE ──────────────────────────────────────────────────────────────────
+var ag1=false,ag2=false,ag3=false;
+function updateEnter(){
+  var go=document.getElementById('goBtn');
+  if(!go) return;
+  if(ag1&&ag2&&ag3){
+    go.style.background='linear-gradient(135deg,#7a1a3a,#c23358)';
+    go.style.color='#fff';
+    go.style.borderColor='#c23358';
+    go.style.pointerEvents='auto';
+    go.innerHTML='Enter Ember &#10022;';
+  } else {
+    go.style.background='rgba(60,10,30,.5)';
+    go.style.color='rgba(160,90,120,.55)';
+    go.style.borderColor='rgba(194,51,88,.3)';
+    go.style.pointerEvents='none';
+    go.innerHTML='Confirm all three above first';
+  }
+}
+function goNow(){
+  var c1=document.getElementById('c1');
+  var c2=document.getElementById('c2');
+  var c3=document.getElementById('c3');
+  var all=(c1&&c1.checked)&&(c2&&c2.checked)&&(c3&&c3.checked);
+  if(!all) return;
+  var gate=document.getElementById('agegate');
+  gate.style.display='none';
+  showScreen('howtoplay');
+}
+
+// ── MOOD GRID ─────────────────────────────────────────────────────────────────
+function buildMoodGrid(){
+  var g=document.getElementById('moodGrid'); g.innerHTML='';
+  MOODS.forEach(function(m){
+    var btn=document.createElement('button');
+    btn.className='mood-btn'; btn.id='mood_'+m.id;
+    btn.style.setProperty('--mc',m.color); btn.style.setProperty('--mc-rgb',m.rgb);
+    btn.innerHTML='<span class="moodicon">'+m.icon+'</span><span class="moodname">'+m.name+'</span><span class="mooddesc">'+m.desc+'</span>';
+    btn.onclick=function(){toggleMood(m.id);};
+    g.appendChild(btn);
+  });
+}
+function toggleMood(id){
+  var idx=state.selectedMoods.indexOf(id);
+  if(idx>=0) state.selectedMoods.splice(idx,1);
+  else state.selectedMoods.push(id);
+  MOODS.forEach(function(m){
+    var b=document.getElementById('mood_'+m.id);
+    if(state.selectedMoods.indexOf(m.id)>=0){
+      b.classList.add('sel'); b.style.borderColor=m.color;
+    } else {
+      b.classList.remove('sel'); b.style.borderColor='rgba(255,255,255,.08)'; b.style.background='rgba(255,255,255,.04)';
+    }
+  });
+}
+
+// ── LOVE LANGUAGE ROWS ────────────────────────────────────────────────────────
+function buildLLRows(){
+  buildLLForPlayer(1); buildLLForPlayer(2);
+}
+function buildLLForPlayer(p){
+  var row1=document.getElementById('llRow'+p+'a'), row2=document.getElementById('llRow'+p+'b');
+  row1.innerHTML=''; row2.innerHTML='';
+  LOVE_LANGS.forEach(function(ll,i){
+    var btn=document.createElement('button');
+    btn.className='ll-btn'; btn.id='ll_'+p+'_'+ll.id;
+    btn.innerHTML='<span class="llicon">'+ll.icon+'</span><span class="llname">'+ll.name+'</span>';
+    btn.onclick=function(){setLL(p,ll.id);};
+    if(i<3) row1.appendChild(btn); else row2.appendChild(btn);
+  });
+  setLL(p, p===1?'touch':'words');
+}
+function setLL(p,id){
+  state.ll[p]=id;
+  LOVE_LANGS.forEach(function(ll){
+    var b=document.getElementById('ll_'+p+'_'+ll.id);
+    if(ll.id===id){b.classList.add('sel');}
+    else{b.classList.remove('sel');b.style.borderColor='rgba(255,255,255,.08)';b.style.background='rgba(255,255,255,.04)';}
+  });
+}
+function updateLLLabels(){
+  var n1=document.getElementById('p1name').value||'Player 1';
+  var n2=document.getElementById('p2name').value||'Player 2';
+  document.getElementById('llLabel1').textContent='💋 '+n1+"'s love language";
+  document.getElementById('llLabel2').textContent='💙 '+n2+"'s love language";
+}
+// Update labels when names change
+document.addEventListener('DOMContentLoaded',function(){
+  var p1=document.getElementById('p1name'),p2=document.getElementById('p2name');
+  if(p1)p1.addEventListener('input',updateLLLabels);
+  if(p2)p2.addEventListener('input',updateLLLabels);
+});
+
+// ── LEVEL GRID ────────────────────────────────────────────────────────────────
+function buildLevelGrid(){
+  var g=document.getElementById('levelGrid'); g.innerHTML='';
+  [1,2,3,4].forEach(function(l){
+    var c=LEVELS[l],btn=document.createElement('button');
+    btn.className='level-btn'; btn.id='lvlgrid'+l;
+    btn.style.setProperty('--lc',c.color); btn.style.setProperty('--lc-rgb',c.rgb);
+    btn.innerHTML='<div class="lem">'+c.emoji+'</div><div class="ln">'+c.label+'</div><div class="ld">'+c.desc+'</div>';
+    btn.onclick=function(){setMaxLevel(l);}; g.appendChild(btn);
+  });
+}
+function setMaxLevel(l){
+  state.maxLevel=l;
+  [1,2,3,4].forEach(function(i){
+    var b=document.getElementById('lvlgrid'+i),c=LEVELS[i];
+    b.style.setProperty('--lc',c.color); b.style.setProperty('--lc-rgb',c.rgb);
+    if(i<=l){b.classList.add('sel');b.style.borderColor=c.color;}
+    else{b.classList.remove('sel');b.style.borderColor='rgba(255,255,255,.08)';b.style.background='rgba(255,255,255,.04)';}
+  });
+  buildLevelChips();
+}
+function buildTargetRow(){
+  var row=document.getElementById('targetRow'); row.innerHTML='';
+  TARGETS.forEach(function(t){
+    var btn=document.createElement('button'); btn.className='target-btn'; btn.id='tgt'+t;
+    btn.innerHTML='<div class="tval">'+t+'</div><div class="tlbl">points</div>';
+    btn.onclick=function(){setTarget(t);}; row.appendChild(btn);
+  });
+}
+function setTarget(t){
+  state.targetScore=t;
+  TARGETS.forEach(function(v){
+    var b=document.getElementById('tgt'+v);
+    if(v===t){b.classList.add('sel');}
+    else{b.classList.remove('sel');b.style.borderColor='rgba(255,255,255,.08)';b.style.background='rgba(255,255,255,.04)';}
+  });
+}
+function buildLevelChips(){
+  var row=document.getElementById('levelChips'); row.innerHTML='';
+  [1,2,3,4].filter(function(l){return l<=state.maxLevel;}).forEach(function(l){
+    var c=LEVELS[l],btn=document.createElement('button');
+    btn.className='chip'; btn.style.borderColor='rgba('+c.rgb+',.4)'; btn.style.background=c.bg; btn.style.color=c.dark;
+    btn.textContent=c.emoji+' '+c.label; btn.onclick=function(){drawLevel(l);}; row.appendChild(btn);
+  });
+}
+function buildHeatRow(){
+  var row=document.getElementById('heatRow'); row.innerHTML='';
+  [1,2,3].forEach(function(h){
+    var btn=document.createElement('button'); btn.className='heat-btn'; btn.id='heatbtn'+h;
+    btn.innerHTML='<div class="hfire">'+'🔥'.repeat(h)+'</div><div class="hlbl">'+HEAT[h].label+'</div>';
+    btn.onclick=function(){setHeat(h);}; row.appendChild(btn);
+  }); setHeat(2);
+}
+function setHeat(h){
+  state.tdcHeat=h;
+  [1,2,3].forEach(function(i){
+    var b=document.getElementById('heatbtn'+i);
+    if(i<=h){b.style.borderColor=HEAT[h].color;b.style.background=HEAT[h].color+'22';b.querySelector('.hlbl').style.color=HEAT[h].color;}
+    else{b.style.borderColor='rgba(255,255,255,.08)';b.style.background='rgba(255,255,255,.04)';b.querySelector('.hlbl').style.color='#3a1a5a';}
+  });
+}
+function buildTdcButtons(){
+  var div=document.getElementById('tdcButtons'); div.innerHTML='';
+  Object.keys(TDC_CFG).forEach(function(type){
+    var cfg=TDC_CFG[type],btn=document.createElement('button');
+    btn.className='tdc-type-btn'; btn.style.borderColor=cfg.color+'55';
+    btn.innerHTML='<span class="ticon">'+cfg.icon+'</span><div><div class="ttitle" style="color:'+cfg.dark+'">'+cfg.label+'</div><div class="tdesc" style="color:'+cfg.color+'">'+cfg.desc+'</div></div>';
+    btn.onclick=function(){drawTDC(type,state.tdcHeat);}; div.appendChild(btn);
+  });
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active'); window.scrollTo(0,0);
+  if(id==='favs') renderFavs();
+}
+
+// ── GAME START ────────────────────────────────────────────────────────────────
+function startGame(){
+  state.scores={1:0,2:0}; state.round=1; state.who=1;
+  state.seen=[]; state.tdcSeen={truth:[],dare:[],command:[]};
+  state.favourites=[]; state.cardCount=0; state.checkInCounter=0;
+  state.emberMomentSeen=[];
+  if(state.selectedMoods.length===0) state.selectedMoods=['fun'];
+  updateLLLabels(); updateScoreRow(); updateTurnLabel(); buildLevelChips();
+  updateMoodBanner();
+  showScreen('game');
+}
+
+// ── MOOD BANNER ───────────────────────────────────────────────────────────────
+function updateMoodBanner(){
+  var banner=document.getElementById('moodBanner');
+  if(!banner)return;
+  if(state.selectedMoods.length===0){banner.style.display='none';return;}
+  var icons=state.selectedMoods.map(function(id){
+    var m=(MOODS.filter(function(x){return x.id===id;})[0]); return m?m.icon+' '+m.name:'';
+  });
+  banner.style.display=''; banner.textContent='Tonight: '+icons.join(' · ');
+}
+
+// ── SCORE ROW ─────────────────────────────────────────────────────────────────
+function pName(p){return document.getElementById(p===1?'p1name':'p2name').value||'Player '+p;}
+function getLLName(p){var ll=(LOVE_LANGS.filter(function(x){return x.id===state.ll[p];})[0]); return ll?ll.icon+' '+ll.name:'';}
+
+function updateScoreRow(){
+  var row=document.getElementById('scoreRow'); row.innerHTML='';
+  [1,2].forEach(function(p){
+    var active=state.who===p, div=document.createElement('div');
+    div.className='score-card'+(active?' active':'');
+    div.innerHTML='<div class="sicon">'+(p===1?'💋':'💙')+'</div>'+
+      '<div class="sname">'+pName(p)+'</div>'+
+      '<div class="sll">'+getLLName(p)+'</div>'+
+      '<div class="spts">'+state.scores[p]+'</div>'+
+      '<div class="starget">of '+state.targetScore+'</div>'+
+      (active?'<div class="sturn">Your turn</div>':'');
+    row.appendChild(div);
+  });
+  document.getElementById('roundLbl').textContent='Round '+state.round;
+  updateProgressBar();
+}
+function updateProgressBar(){
+  var wrap=document.getElementById('progressWrap'); if(!wrap)return;
+  var p1=Math.min(100,Math.round((state.scores[1]/state.targetScore)*100));
+  var p2=Math.min(100,Math.round((state.scores[2]/state.targetScore)*100));
+  wrap.innerHTML=
+    '<div class="progress-label"><span>'+pName(1)+' — '+state.scores[1]+' pts</span><span>Target: '+state.targetScore+'</span></div>'+
+    '<div class="progress-track"><div class="progress-fill" style="width:'+p1+'%"></div></div>'+
+    '<div class="progress-label" style="margin-top:6px"><span>'+pName(2)+' — '+state.scores[2]+' pts</span></div>'+
+    '<div class="progress-track"><div class="progress-fill" style="width:'+p2+'%;background:linear-gradient(90deg,#4a1a7a,#b87ee8)"></div></div>';
+}
+function updateTurnLabel(){
+  document.getElementById('turnLbl').textContent=pName(state.who)+"'s turn — roll the dice";
+  var tl=document.getElementById('tdcTurnLbl'); if(tl)tl.textContent=pName(state.who)+"'s turn — choose your path";
+}
+function advance(pts){
+  state.scores[state.who]+=pts; state.cardCount++;
+  if(state.who===2) state.round++;
+  stopTimer();
+  if(state.scores[state.who]>=state.targetScore){showWinner(state.who);return;}
+  state.who=state.who===1?2:1;
+  updateScoreRow(); updateTurnLabel(); showScreen('game');
+}
+
+// ── MOOD-BIASED LEVEL PICK ────────────────────────────────────────────────────
+function getMoodBiasedLevel(){
+  if(state.selectedMoods.length===0) return Math.min(Math.ceil(Math.random()*state.maxLevel),state.maxLevel);
+  var allBias=[];
+  state.selectedMoods.forEach(function(id){
+    var m=(MOODS.filter(function(x){return x.id===id;})[0]);
+    if(m) allBias=allBias.concat(m.levelBias);
+  });
+  var filtered=allBias.filter(function(l){return l<=state.maxLevel;});
+  if(!filtered.length) filtered=[1];
+  return filtered[Math.floor(Math.random()*filtered.length)];
+}
+function getMoodBiasedType(level){
+  if(state.selectedMoods.length===0) return null;
+  var allTypes=[];
+  state.selectedMoods.forEach(function(id){
+    var m=(MOODS.filter(function(x){return x.id===id;})[0]);
+    if(m) allTypes=allTypes.concat(m.typeBias);
+  });
+  return allTypes.length?allTypes[Math.floor(Math.random()*allTypes.length)]:null;
+}
+
+// ── DICE ──────────────────────────────────────────────────────────────────────
+function rollDice(){
+  if(state.rolling)return;
+  state.rolling=true;
+  var face=document.getElementById('diceFace'),btn=document.getElementById('rollBtn');
+  face.classList.add('rolling'); btn.textContent='Rolling…';
+  btn.style.background='rgba(255,255,255,.06)'; btn.style.color='#5a3a7a';
+  var t=0,iv=setInterval(function(){
+    t++; face.textContent=DICE_FACES[Math.floor(Math.random()*6)];
+    if(t>10){
+      clearInterval(iv);
+      var val=Math.ceil(Math.random()*6);
+      face.textContent=DICE_FACES[val-1]; face.classList.remove('rolling');
+      btn.textContent='🎲 Roll the Dice'; btn.style.background='linear-gradient(135deg,#9b1f4a,#c23358)'; btn.style.color='#fff';
+      state.rolling=false;
+      smartDraw();
+    }
+  },80);
+}
+
+// ── SMART DRAW (mood + checkin + ember moment logic) ──────────────────────────
+function smartDraw(){
+  // Every 5 cards show a check-in
+  state.checkInCounter++;
+  if(state.checkInCounter>=5){
+    state.checkInCounter=0;
+    showCheckIn(); return;
+  }
+  // Ember moment: ~1 in 8 chance, max 3 per game
+  if(state.emberMomentSeen.length<3 && Math.random()<0.125){
+    var pool=EMBER_MOMENTS.filter(function(m){return state.emberMomentSeen.indexOf(m)<0;});
+    if(pool.length){showEmberMoment(pool[Math.floor(Math.random()*pool.length)]);return;}
+  }
+  var level=getMoodBiasedLevel();
+  drawLevel(level);
+}
+
+// ── DRAW CARDS ────────────────────────────────────────────────────────────────
+function drawLevel(level){
+  var preferredType=getMoodBiasedType(level);
+  var pool=ALL_CARDS.filter(function(c){return c.level===level&&state.seen.indexOf(c)<0;});
+  if(pool.length===0){
+    state.seen=state.seen.filter(function(c){return c.level!==level;});
+    pool=ALL_CARDS.filter(function(c){return c.level===level;});
+  }
+  // Try to match preferred type
+  var typed=preferredType?pool.filter(function(c){return c.type===preferredType;}):[];
+  var chosen=(typed.length?typed:pool)[Math.floor(Math.random()*(typed.length||pool.length))];
+  state.seen.push(chosen); state.card=chosen; state.cardSource='level'; state.cardTdcType=null;
+  showCard();
+}
+function drawTDC(type,heat){
+  var pool=TDC[type].filter(function(c){return c.heat<=heat&&state.tdcSeen[type].indexOf(c)<0;});
+  if(!pool.length){state.tdcSeen[type]=[];pool=TDC[type].filter(function(c){return c.heat<=heat;});}
+  var exact=pool.filter(function(c){return c.heat===heat;});
+  var from=exact.length?exact:pool;
+  var chosen=from[Math.floor(Math.random()*from.length)];
+  state.tdcSeen[type].push(chosen); state.card=chosen; state.cardSource='tdc'; state.cardTdcType=type;
+  showCard();
+}
+
+// ── EMBER MOMENT ──────────────────────────────────────────────────────────────
+function showEmberMoment(text){
+  state.emberMomentSeen.push(text);
+  state.currentCardText=text; state.currentCardType='ember';
+  var wrap=document.getElementById('cardBoxWrap');
+  wrap.innerHTML='<div class="ember-moment-box">'+
+    '<div class="ember-moment-label">✦ &nbsp; Ember Moment &nbsp; ✦</div>'+
+    '<p class="ember-moment-text">'+text+'</p>'+
+    '</div>';
+  document.getElementById('cardOrnament').innerHTML='✦ &nbsp; ✦ &nbsp; ✦';
+  document.getElementById('cardWho').textContent=pName(state.who)+"'s Ember Moment";
+  document.getElementById('cardDoneBtn').textContent='Done! +4 pts';
+  document.getElementById('cardDoneBtn').setAttribute('data-pts','4');
+  document.getElementById('cardBack').setAttribute('data-back','game');
+  document.getElementById('redrawBtn').style.display='none';
+  setFavBtn(false);
+  showScreen('cardScreen');
+}
+
+// ── CHECK IN ──────────────────────────────────────────────────────────────────
+function showCheckIn(){
+  var text=CHECKINS[Math.floor(Math.random()*CHECKINS.length)];
+  state.currentCardText=text; state.currentCardType='checkin';
+  var wrap=document.getElementById('cardBoxWrap');
+  wrap.innerHTML='<div class="checkin-box">'+
+    '<div class="checkin-label">🫶 &nbsp; Check In &nbsp; 🫶</div>'+
+    '<p class="checkin-text">'+text+'</p>'+
+    '<p class="checkin-timer-note">Take turns — 90 seconds each, no interruptions</p>'+
+    '</div>';
+  document.getElementById('cardOrnament').innerHTML='';
+  document.getElementById('cardWho').textContent='Both of you — take a moment';
+  document.getElementById('cardDoneBtn').textContent='We checked in ✓ +2 pts';
+  document.getElementById('cardDoneBtn').setAttribute('data-pts','2');
+  document.getElementById('cardBack').setAttribute('data-back','game');
+  document.getElementById('redrawBtn').style.display='none';
+  setFavBtn(false);
+  showScreen('cardScreen');
+}
+
+// ── REGULAR CARD ──────────────────────────────────────────────────────────────
+function showCard(){
+  stopTimer();
+  var c=state.card, isLevel=state.cardSource==='level';
+  state.currentCardText=c.text;
+  state.currentCardType=isLevel?c.type:state.cardTdcType;
+  var borderColor,badges='';
+  if(isLevel){
+    var lc=LEVELS[c.level]; borderColor=lc.color;
+    badges+='<span class="badge" style="background:'+lc.bg+';color:'+lc.dark+'">'+lc.emoji+' '+lc.label+'</span>';
+    badges+='<span class="badge" style="background:rgba(255,255,255,.06);color:#9a78b0">'+TYPES[c.type]+'</span>';
+  } else {
+    var cfg=TDC_CFG[state.cardTdcType],hc=HEAT[c.heat]; borderColor=cfg.color;
+    badges+='<span class="badge" style="background:'+cfg.bg+';color:'+cfg.dark+'">'+cfg.icon+' '+cfg.label+'</span>';
+    badges+='<span class="badge" style="background:'+hc.color+'22;color:'+hc.color+'">'+('🔥'.repeat(c.heat))+' '+hc.label+'</span>';
+  }
+  // Love language badge
+  var currentLL=(LOVE_LANGS.filter(function(x){return x.id===state.ll[state.who];})[0]);
+  if(currentLL && (c.type==='question'||c.type==='together'||c.type==='fantasy')){
+    badges+='<span class="badge" style="background:rgba(201,168,76,.12);color:#c9a84c">'+currentLL.icon+' For '+pName(state.who)+'</span>';
+  }
+  var pts=isLevel?c.level*(c.timer?2:1):c.heat*3;
+  badges+='<span class="badge" style="background:rgba(201,168,76,.15);color:#c9a84c">✦ +'+pts+' pts</span>';
+  var wrap=document.getElementById('cardBoxWrap');
+  wrap.innerHTML='<div class="card-box" id="cardBox" style="border-color:'+borderColor+'60;box-shadow:0 8px 40px '+borderColor+'25">'+
+    '<div class="badge-row">'+badges+'</div><p class="card-text">'+c.text+'</p></div>';
+  if(c.timer){
+    document.getElementById('cardBox').innerHTML+='<div class="timer-box" id="timerBox">'+timerHTML(c.timer,c.timer)+'</div>';
+    state.timerSecs=c.timer; state.timerRem=c.timer; state.timerRunning=false;
+  }
+  document.getElementById('cardOrnament').innerHTML='✦ &nbsp; ✦ &nbsp; ✦';
+  document.getElementById('cardWho').textContent=pName(state.who)+"'s turn";
+  document.getElementById('cardDoneBtn').textContent='Done! +'+pts+' pts';
+  document.getElementById('cardDoneBtn').setAttribute('data-pts',pts);
+  document.getElementById('cardBack').setAttribute('data-back',isLevel?'game':'tdc');
+  document.getElementById('redrawBtn').style.display='';
+  setFavBtn(isFaved());
+  showScreen('cardScreen');
+}
+
+// ── FAVOURITES ────────────────────────────────────────────────────────────────
+function isFaved(){
+  return state.favourites.some(function(f){return f.text===state.currentCardText;});
+}
+function setFavBtn(faved){
+  var btn=document.getElementById('favBtn');
+  if(!btn)return;
+  btn.textContent=faved?'❤️':'🤍';
+  btn.classList.toggle('faved',faved);
+}
+function toggleFav(){
+  var text=state.currentCardText, type=state.currentCardType;
+  if(!text)return;
+  var idx=-1;for(var _fi=0;_fi<state.favourites.length;_fi++){if(state.favourites[_fi].text===text){idx=_fi;break;}}
+  if(idx>=0){state.favourites.splice(idx,1);setFavBtn(false);}
+  else{state.favourites.push({text:text,type:type,round:state.round});setFavBtn(true);}
+}
+function renderFavs(){
+  var div=document.getElementById('favsList'); div.innerHTML='';
+  if(!state.favourites.length){
+    div.innerHTML='<div class="empty-favs">No saved cards yet.<br>Tap 🤍 on any card during the game to save it here.</div>';
+    return;
+  }
+  var list=document.createElement('div'); list.className='favs-list';
+  state.favourites.forEach(function(f){
+    var item=document.createElement('div'); item.className='fav-item';
+    item.innerHTML='<div class="fav-item-text">'+f.text+'</div>'+
+      '<div class="fav-item-meta">'+f.type.toUpperCase()+' · Round '+f.round+'</div>';
+    list.appendChild(item);
+  });
+  div.appendChild(list);
+}
+
+// ── TIMER ─────────────────────────────────────────────────────────────────────
+function timerHTML(rem,total){
+  var mins=Math.floor(rem/60),secs=rem%60;
+  var disp=mins>0?mins+':'+(secs<10?'0':'')+secs:secs+'s';
+  var pct=Math.round((rem/total)*100),urgent=rem<10&&rem>0,running=state.timerRunning;
+  return '<div class="timer-digits'+(urgent?' urgent':'')+'">'+disp+'</div>'+
+    '<div class="timer-bar"><div class="timer-fill'+(urgent?' urgent':'')+'" style="width:'+pct+'%"></div></div>'+
+    (rem>0?'<button class="timer-btn" style="background:'+(running?'rgba(255,255,255,.06)':'linear-gradient(135deg,#9b1f4a,#c23358)')+';color:'+(running?'#9a78b0':'#fff')+';border-color:rgba(194,51,88,.4)" onclick="toggleTimer()">'+(running?'⏸ Pause':rem===total?'▶ Start Timer':'▶ Resume')+'</button>'
+      :'<div style="color:#e8679a;font-style:italic;font-size:13px">✦ Time\'s up ✦</div>');
+}
+function toggleTimer(){if(state.timerRunning){stopTimer();}else{startTimer();}}
+function startTimer(){
+  if(state.timerRem<=0)return;
+  state.timerRunning=true; updateTimerUI();
+  state.timerIv=setInterval(function(){
+    state.timerRem--;
+    if(state.timerRem<=0){state.timerRem=0;stopTimer();}
+    updateTimerUI();
+  },1000);
+}
+function stopTimer(){clearInterval(state.timerIv);state.timerRunning=false;updateTimerUI();}
+function updateTimerUI(){var b=document.getElementById('timerBox');if(b)b.innerHTML=timerHTML(state.timerRem,state.timerSecs);}
+
+function cardGoBack(){stopTimer();showScreen(document.getElementById('cardBack').getAttribute('data-back'));}
+function cardDone(){advance(parseInt(document.getElementById('cardDoneBtn').getAttribute('data-pts')));}
+function cardSkip(){advance(0);}
+function cardRedraw(){
+  stopTimer();
+  if(state.cardSource==='level')drawLevel(state.card.level);
+  else drawTDC(state.cardTdcType,state.tdcHeat);
+}
+
+// ── WINNER ────────────────────────────────────────────────────────────────────
+function showWinner(winner){
+  var loser=winner===1?2:1;
+  document.getElementById('winnerName').textContent=pName(winner);
+  var sb=document.getElementById('winnerScores');
+  sb.innerHTML='<div class="wscore"><div class="wval">'+state.scores[winner]+'</div><div class="wlbl">'+pName(winner)+'</div></div>'+
+    '<div style="width:1px;background:rgba(201,168,76,.2);align-self:stretch"></div>'+
+    '<div class="wscore"><div class="wval" style="color:#6a4a7a">'+state.scores[loser]+'</div><div class="wlbl">'+pName(loser)+'</div></div>';
+  document.getElementById('rewardText').textContent=REWARDS[Math.floor(Math.random()*REWARDS.length)];
+  document.getElementById('loserNote').textContent=pName(loser)+' — a deal is a deal. This reward belongs to '+pName(winner)+' and must be honoured tonight.';
+  showScreen('winnerScreen');
+  launchConfetti();
+}
+
+// ── AFTERGLOW ─────────────────────────────────────────────────────────────────
+function showAfterGlow(){
+  stopConfetti();
+  var stats=document.getElementById('afterglowStats');
+  stats.innerHTML=
+    '<div class="ag-stat"><span class="ag-val">'+state.cardCount+'</span><span class="ag-lbl">Cards</span></div>'+
+    '<div class="ag-stat"><span class="ag-val">'+state.round+'</span><span class="ag-lbl">Rounds</span></div>'+
+    '<div class="ag-stat"><span class="ag-val">'+state.favourites.length+'</span><span class="ag-lbl">Saved ❤️</span></div>'+
+    '<div class="ag-stat"><span class="ag-val">'+state.emberMomentSeen.length+'</span><span class="ag-lbl">Ember ✦</span></div>';
+  document.getElementById('afterglowQuote').textContent=AFTERGLOW_QUOTES[Math.floor(Math.random()*AFTERGLOW_QUOTES.length)];
+  var favDiv=document.getElementById('afterglowFavs');
+  if(state.favourites.length){
+    favDiv.innerHTML='<div class="afterglow-fav-row">'+
+      '<div class="afterglow-fav-title">❤️ Your favourite moments tonight</div>'+
+      '<div class="favs-list" id="agFavList"></div></div>';
+    var list=document.getElementById('agFavList');
+    state.favourites.forEach(function(f){
+      var item=document.createElement('div'); item.className='fav-item';
+      item.innerHTML='<div class="fav-item-text">'+f.text+'</div>';
+      list.appendChild(item);
+    });
+  } else { favDiv.innerHTML=''; }
+  showScreen('afterglow');
+}
+
+function playAgain(){stopConfetti();startGame();}
+
+// ── CONFETTI ──────────────────────────────────────────────────────────────────
+var confettiAnim=null,confettiPieces=[];
+function launchConfetti(){
+  var canvas=document.getElementById('confettiCanvas'); if(!canvas)return;
+  canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+  var ctx=canvas.getContext('2d');
+  var colors=['#c9a84c','#e8679a','#b87ee8','#6ab0e8','#f0a0b8','#d4a8f8'];
+  confettiPieces=[];
+  for(var i=0;i<60;i++){
+    confettiPieces.push({
+      x:Math.random()*canvas.width,
+      y:-20-Math.random()*canvas.height,
+      w:6+Math.random()*8, h:3+Math.random()*5,
+      color:colors[Math.floor(Math.random()*colors.length)],
+      rot:Math.random()*360, speed:1.5+Math.random()*2.5,
+      swing:Math.random()*3, swingSpeed:0.02+Math.random()*.03,
+      swingPos:Math.random()*Math.PI*2
+    });
+  }
+  function draw(){
+    if(!confettiAnim) return;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    confettiPieces.forEach(function(p){
+      p.y+=p.speed; p.swingPos+=p.swingSpeed;
+      p.x+=Math.sin(p.swingPos)*p.swing; p.rot+=1.5;
+      if(p.y>canvas.height){p.y=-10;p.x=Math.random()*canvas.width;}
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle=p.color; ctx.globalAlpha=0.85;
+      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore();
+    });
+    confettiAnim=setTimeout(draw,16);
+  }
+  confettiAnim=setTimeout(draw,16);
+  setTimeout(stopConfetti,6000);
+}
+function stopConfetti(){
+  if(confettiAnim){clearTimeout(confettiAnim);confettiAnim=null;}
+  var canvas=document.getElementById('confettiCanvas');
+  if(canvas){var ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);}
+}
+
+</script>
+
+<!-- Install Banner -->
+<div id="installBanner">
+  <div class="ib-row">
+    <div class="ib-icon">&#128293;</div>
+    <div class="ib-text">
+      <div class="ib-title">Add Ember to your home screen</div>
+      <div class="ib-sub">Plays offline like a real app</div>
+    </div>
+    <button class="ib-install" onclick="installApp()">Install</button>
+    <button class="ib-close" onclick="dismissInstall()">&#10005;</button>
+  </div>
+</div>
+
+</body>
+</html>
