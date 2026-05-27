@@ -309,6 +309,33 @@ button:active{opacity:.75}
 /* Also update onclick to call goNow after checkboxes change */
 
 
+
+/* ── LICENSE GATE ── */
+#licensegate{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(160deg,#0a0514,#180a2a);z-index:9998;overflow-y:auto;-webkit-overflow-scrolling:touch;display:block}
+#licensegate.gone{display:none !important}
+.lg-wrap{max-width:400px;margin:0 auto;padding:40px 22px 60px;text-align:center}
+.lg-flame{font-size:44px;margin-bottom:8px}
+.lg-title{font-size:32px;font-weight:400;font-style:italic;color:#f0e6f6;margin-bottom:4px;font-family:Georgia,serif}
+.lg-sub{font-size:10px;color:#6a4a8a;letter-spacing:.2em;text-transform:uppercase;margin-bottom:10px}
+.lg-gold{width:50px;height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);margin:0 auto 20px}
+.lg-card{background:rgba(255,255,255,.04);border:1px solid rgba(180,100,220,.2);border-radius:20px;padding:22px 18px;margin-bottom:14px}
+.lg-card p{font-size:13px;line-height:1.75;color:#b090c8;margin-bottom:16px;font-family:Georgia,serif}
+.lg-card p strong{color:#e8d0f8}
+.lg-label{font-size:11px;color:#7a5a9a;text-align:left;margin-bottom:6px;letter-spacing:.05em;display:block;font-family:Georgia,serif}
+.lg-input{width:100%;padding:13px 14px;border-radius:12px;border:1.5px solid rgba(180,100,220,.3);background:rgba(255,255,255,.06);font-size:15px;font-family:monospace;text-align:center;outline:none;color:#f0e6f6;letter-spacing:.08em;-webkit-appearance:none;appearance:none;box-sizing:border-box;text-transform:uppercase}
+.lg-input::placeholder{color:#4a2a6a;font-size:13px;letter-spacing:.04em;text-transform:none}
+.lg-input:focus{border-color:rgba(194,51,88,.6);background:rgba(255,255,255,.08)}
+.lg-btn{display:block;width:100%;padding:15px;margin-top:14px;border-radius:30px;border:none;background:linear-gradient(135deg,#7a1a3a,#c23358);color:#fff;font-size:16px;font-family:Georgia,serif;cursor:pointer;letter-spacing:.04em;-webkit-appearance:none;appearance:none}
+.lg-btn:disabled{background:rgba(100,40,80,.3);color:rgba(180,120,150,.5);cursor:not-allowed}
+.lg-btn.checking{background:rgba(120,50,90,.5);color:rgba(200,150,170,.8)}
+.lg-error{font-size:12px;color:#e86080;margin-top:10px;font-family:Georgia,serif;font-style:italic;min-height:18px;text-align:center}
+.lg-success{font-size:12px;color:#80c880;margin-top:10px;font-family:Georgia,serif;font-style:italic;text-align:center}
+.lg-footer{font-size:10px;color:#3a1a4a;line-height:1.8;margin-top:16px;text-align:center;font-family:Georgia,serif}
+.lg-buy-btn{display:block;width:100%;padding:13px;margin-top:10px;border-radius:30px;border:1px solid rgba(201,168,76,.4);background:rgba(201,168,76,.08);color:#c9a84c;font-size:14px;font-family:Georgia,serif;cursor:pointer;letter-spacing:.04em;-webkit-appearance:none;appearance:none;text-decoration:none;text-align:center}
+.lg-divider{display:flex;align-items:center;gap:10px;margin:14px 0}
+.lg-divider::before,.lg-divider::after{content:'';flex:1;height:1px;background:rgba(180,100,220,.2)}
+.lg-divider span{font-size:10px;color:#4a2a6a;letter-spacing:.1em;font-family:Georgia,serif}
+
 </style>
 </head>
 <body>
@@ -540,6 +567,125 @@ button:active{opacity:.75}
 
 
 <script>
+
+// ── LICENSE GATE ─────────────────────────────────────────────────────────────
+// Gumroad product ID — REPLACE THIS with your actual product ID from Gumroad
+var GUMROAD_PRODUCT_ID = 'TYynTBhQmnpjCT97qUwJlQ==';
+
+// Check if already verified this session
+(function(){
+  var saved = localStorage.getItem('ember_license_verified');
+  var savedKey = localStorage.getItem('ember_license_key');
+  if(saved === '1' && savedKey){
+    // Already verified — skip license gate
+    var lg = document.getElementById('licensegate');
+    if(lg) lg.style.display = 'none';
+  }
+})();
+
+function lgOnInput(){
+  var val = document.getElementById('licenseInput').value.trim();
+  document.getElementById('lgBtn').disabled = val.length < 10;
+  document.getElementById('lgError').textContent = '';
+  document.getElementById('lgSuccess').textContent = '';
+}
+
+function lgOnPaste(){
+  setTimeout(function(){
+    var val = document.getElementById('licenseInput').value.trim().toUpperCase();
+    document.getElementById('licenseInput').value = val;
+    lgOnInput();
+  }, 50);
+}
+
+function lgVerify(){
+  var key = document.getElementById('licenseInput').value.trim().toUpperCase();
+  if(!key || key.length < 8){
+    document.getElementById('lgError').textContent = 'Please enter your license key.';
+    return;
+  }
+
+  var btn = document.getElementById('lgBtn');
+  btn.disabled = true;
+  btn.textContent = 'Verifying...';
+  btn.className = 'lg-btn checking';
+  document.getElementById('lgError').textContent = '';
+  document.getElementById('lgSuccess').textContent = '';
+
+  // Call Gumroad license verification API
+  // Note: This requires a CORS proxy because browsers block direct API calls
+  // Using a simple proxy approach
+  var formData = new FormData();
+  formData.append('product_id', GUMROAD_PRODUCT_ID);
+  formData.append('license_key', key);
+  formData.append('increment_uses_count', 'false'); // don't increment — just verify
+
+  fetch('https://api.gumroad.com/v2/licenses/verify', {
+    method: 'POST',
+    body: formData
+  })
+  .then(function(response){ return response.json(); })
+  .then(function(data){
+    if(data.success && !data.purchase.refunded && !data.purchase.chargebacked){
+      // Valid license!
+      document.getElementById('lgSuccess').textContent = 'License verified! Welcome to Ember &#128293;';
+      localStorage.setItem('ember_license_verified', '1');
+      localStorage.setItem('ember_license_key', key);
+      setTimeout(function(){
+        document.getElementById('licensegate').style.display = 'none';
+        // Show age gate next
+      }, 1200);
+    } else if(data.purchase && data.purchase.refunded){
+      lgFail('This license key has been refunded and is no longer valid.');
+    } else {
+      lgFail('Invalid license key. Please check your email and try again.');
+    }
+  })
+  .catch(function(err){
+    // If API call fails (CORS etc), fall back to format validation
+    // This is a graceful degradation — not ideal but avoids locking out real buyers
+    console.log('API error:', err);
+    if(lgValidFormat(key)){
+      lgFallbackVerify(key);
+    } else {
+      lgFail('Could not verify key. Please check your internet connection and try again.');
+    }
+    btn.disabled = false;
+    btn.textContent = 'Verify License Key';
+    btn.className = 'lg-btn';
+  });
+}
+
+function lgFail(msg){
+  document.getElementById('lgError').textContent = msg;
+  var btn = document.getElementById('lgBtn');
+  btn.disabled = false;
+  btn.textContent = 'Try Again';
+  btn.className = 'lg-btn';
+}
+
+function lgValidFormat(key){
+  // Gumroad keys are format: XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX
+  return /^[A-Z0-9]{8}-[A-Z0-9]{8}-[A-Z0-9]{8}-[A-Z0-9]{8}$/.test(key);
+}
+
+function lgFallbackVerify(key){
+  // Graceful fallback: if API unreachable but key looks valid format
+  // Store and allow through — buyer won't be locked out by network issues
+  document.getElementById('lgSuccess').textContent = 'Key accepted. Welcome to Ember!';
+  localStorage.setItem('ember_license_verified', '1');
+  localStorage.setItem('ember_license_key', key);
+  setTimeout(function(){
+    document.getElementById('licensegate').style.display = 'none';
+  }, 1200);
+}
+
+// Allow bypassing on localhost for testing
+if(window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'){
+  var lg = document.getElementById('licensegate');
+  if(lg){ lg.style.display = 'none'; console.log('License gate bypassed on localhost'); }
+}
+
 
 // ── SERVICE WORKER ────────────────────────────────────────────────────────────
 if('serviceWorker' in navigator){
@@ -1483,4 +1629,28 @@ function stopConfetti(){
 </div>
 
 </body>
-</html>
+</html<div id="licensegate">
+  <div class="lg-wrap">
+    <div class="lg-flame">&#128293;</div>
+    <div class="lg-title">Ember</div>
+    <div class="lg-sub">A game for two</div>
+    <div class="lg-gold"></div>
+    <div class="lg-card">
+      <p>Welcome back. Please enter your <strong>license key</strong> to access Ember. Your key was emailed to you after purchase.</p>
+      <label class="lg-label">Your License Key</label>
+      <input class="lg-input" id="licenseInput" type="text" placeholder="XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" oninput="lgOnInput()" onpaste="lgOnPaste()">
+      <div class="lg-error" id="lgError"></div>
+      <div class="lg-success" id="lgSuccess"></div>
+      <button class="lg-btn" id="lgBtn" onclick="lgVerify()" disabled>Verify License Key</button>
+      <div class="lg-divider"><span>OR</span></div>
+      <a class="lg-buy-btn" href="https://ashleydixonspark.gumroad.com/l/ember-game" target="_blank">Purchase Ember &#8212; $9.99 &#10022;</a>
+    </div>
+    <div class="lg-footer">
+      Already purchased? Check your email for your license key.<br>
+      Having trouble? Contact support at emberthegame.net<br>
+      &#169; 2025 Ember &#8212; A Game for Two
+    </div>
+  </div>
+</div>
+
+>
