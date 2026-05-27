@@ -270,7 +270,7 @@ button:active{opacity:.75}
 
 
 /* ── AGE GATE — pure CSS, zero JavaScript required ── */
-#agegate{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(160deg,#0a0514,#180a2a);z-index:9999;overflow-y:auto;-webkit-overflow-scrolling:touch;display:block}
+#agegate{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(160deg,#0a0514,#180a2a);z-index:9999;overflow-y:auto;-webkit-overflow-scrolling:touch;display:block}
 #agegate.gone{display:none}
 
 /* Hide the actual checkboxes */
@@ -311,7 +311,7 @@ button:active{opacity:.75}
 
 
 /* ── LICENSE GATE ── */
-#licensegate{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(160deg,#0a0514,#180a2a);z-index:9998;overflow-y:auto;-webkit-overflow-scrolling:touch;display:block}
+#licensegate{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(160deg,#0a0514,#180a2a);z-index:10000;overflow-y:auto;-webkit-overflow-scrolling:touch;display:block}
 #licensegate.gone{display:none !important}
 .lg-wrap{max-width:400px;margin:0 auto;padding:40px 22px 60px;text-align:center}
 .lg-flame{font-size:44px;margin-bottom:8px}
@@ -340,6 +340,31 @@ button:active{opacity:.75}
 </head>
 <body>
 
+
+<!-- ═══ LICENSE GATE ═══ -->
+<div id="licensegate">
+  <div class="lg-wrap">
+    <div class="lg-flame">&#128293;</div>
+    <div class="lg-title">Ember</div>
+    <div class="lg-sub">A game for two</div>
+    <div class="lg-gold"></div>
+    <div class="lg-card">
+      <p>Welcome back. Please enter your <strong>license key</strong> to access Ember. Your key was emailed to you after purchase.</p>
+      <label class="lg-label">Your License Key</label>
+      <input class="lg-input" id="licenseInput" type="text" placeholder="XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" oninput="lgOnInput()" onpaste="lgOnPaste()">
+      <div class="lg-error" id="lgError"></div>
+      <div class="lg-success" id="lgSuccess"></div>
+      <button class="lg-btn" id="lgBtn" onclick="lgVerify()" disabled>Verify License Key</button>
+      <div class="lg-divider"><span>OR</span></div>
+      <a class="lg-buy-btn" href="https://ashleydixonspark.gumroad.com/l/ember-game" target="_blank">Purchase Ember &#8212; $9.99 &#10022;</a>
+    </div>
+    <div class="lg-footer">
+      Already purchased? Check your email for your license key.<br>
+      Having trouble? Contact us at emberthegame.net<br>
+      &#169; 2025 Ember &#8212; A Game for Two
+    </div>
+  </div>
+</div>
 
 <!-- ═══ AGE GATE ═══ -->
 <div id="agegate" id="agegate">
@@ -577,9 +602,11 @@ var GUMROAD_PRODUCT_ID = 'TYynTBhQmnpjCT97qUwJlQ==';
   var saved = localStorage.getItem('ember_license_verified');
   var savedKey = localStorage.getItem('ember_license_key');
   if(saved === '1' && savedKey){
-    // Already verified — skip license gate
+    // Already verified — skip license gate, show age gate
     var lg = document.getElementById('licensegate');
     if(lg) lg.style.display = 'none';
+    var ag = document.getElementById('agegate');
+    if(ag) ag.style.display = 'block';
   }
 })();
 
@@ -633,7 +660,7 @@ function lgVerify(){
       localStorage.setItem('ember_license_key', key);
       setTimeout(function(){
         document.getElementById('licensegate').style.display = 'none';
-        // Show age gate next
+        document.getElementById('agegate').style.display = 'block';
       }, 1200);
     } else if(data.purchase && data.purchase.refunded){
       lgFail('This license key has been refunded and is no longer valid.');
@@ -677,13 +704,14 @@ function lgFallbackVerify(key){
   localStorage.setItem('ember_license_key', key);
   setTimeout(function(){
     document.getElementById('licensegate').style.display = 'none';
+  document.getElementById('agegate').style.display = 'block';
   }, 1200);
 }
 
 // Allow bypassing on localhost for testing
 if(window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'){
   var lg = document.getElementById('licensegate');
-  if(lg){ lg.style.display = 'none'; console.log('License gate bypassed on localhost'); }
+  if(lg){ lg.style.display = 'none'; } var agLoc = document.getElementById('agegate'); if(agLoc) agLoc.style.display = 'block'; console.log('License gate bypassed on localhost');
 }
 
 
@@ -1629,28 +1657,4 @@ function stopConfetti(){
 </div>
 
 </body>
-</html<div id="licensegate">
-  <div class="lg-wrap">
-    <div class="lg-flame">&#128293;</div>
-    <div class="lg-title">Ember</div>
-    <div class="lg-sub">A game for two</div>
-    <div class="lg-gold"></div>
-    <div class="lg-card">
-      <p>Welcome back. Please enter your <strong>license key</strong> to access Ember. Your key was emailed to you after purchase.</p>
-      <label class="lg-label">Your License Key</label>
-      <input class="lg-input" id="licenseInput" type="text" placeholder="XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" oninput="lgOnInput()" onpaste="lgOnPaste()">
-      <div class="lg-error" id="lgError"></div>
-      <div class="lg-success" id="lgSuccess"></div>
-      <button class="lg-btn" id="lgBtn" onclick="lgVerify()" disabled>Verify License Key</button>
-      <div class="lg-divider"><span>OR</span></div>
-      <a class="lg-buy-btn" href="https://ashleydixonspark.gumroad.com/l/ember-game" target="_blank">Purchase Ember &#8212; $9.99 &#10022;</a>
-    </div>
-    <div class="lg-footer">
-      Already purchased? Check your email for your license key.<br>
-      Having trouble? Contact support at emberthegame.net<br>
-      &#169; 2025 Ember &#8212; A Game for Two
-    </div>
-  </div>
-</div>
-
->
+</html>
